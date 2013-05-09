@@ -1,1 +1,1 @@
-web: bundle exec ruby publication.rb -p $PORT
+web: ruby ahola.rb
