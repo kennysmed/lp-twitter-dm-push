@@ -5,6 +5,7 @@ module Ahola
   class Twitter
 
     def initialize
+      puts "KEY: " + ENV['TWITTER_CONSUMER_KEY']
       @consumer_key = ENV['TWITTER_CONSUMER_KEY']
       @consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
     end
@@ -16,8 +17,7 @@ module Ahola
 
   
     def self.consumer
-      puts "CLIENT: #{@consumer_key} #{@consumer_secret}"
-
+      puts "KEY 2: " + @consumer_key
       return OAuth::Consumer.new(
         @consumer_key,
         @consumer_secret,
@@ -26,8 +26,8 @@ module Ahola
 
     def self.tweetstream(token, secret)
       TweetStream::Client.new(
-        :consumer_key => @consumer_key,
-        :consumer_secret => @consumer_secret,
+        :consumer_key => consumer.key,
+        :consumer_secret => consumer.secret,
         :oauth_token => token,
         :oauth_token_secret => secret,
         :auth_method => :oauth
