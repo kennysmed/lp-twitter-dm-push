@@ -38,6 +38,7 @@ module Ahola
                                   :return_url => params[:return_url],
                                   :error_url => params[:error_url])
       callback_url = url('/authorised/') + "?" + query
+      puts "CALLBACK: #{callback_url}"
       request_token = consumer.get_request_token(
                                               :oauth_callback => callback_url)
       token_store.store(:request_token, id, request_token)
