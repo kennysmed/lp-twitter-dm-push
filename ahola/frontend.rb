@@ -44,7 +44,7 @@ module Ahola
                                               :oauth_callback => callback_url)
       rescue OAuth::Unauthorized
         puts "UNAUTH: #{params[:error_url]}"
-        return redirect params[:error_url], 401
+        redirect params[:error_url]
       end
       token_store.store(:request_token, id, request_token)
       redirect request_token.authorize_url(:oauth_callback => callback_url)
