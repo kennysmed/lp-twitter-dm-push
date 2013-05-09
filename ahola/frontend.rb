@@ -39,8 +39,12 @@ module Ahola
                                   :error_url => params[:error_url])
       callback_url = url('/authorised/') + "?" + query
       puts "CALLBACK: #{callback_url}"
-      request_token = consumer.get_request_token(
+      begin
+        request_token = consumer.get_request_token(
                                               :oauth_callback => callback_url)
+      rescue OAuth::Unauthorized
+        redirect params[:error_url], 401
+      end
       token_store.store(:request_token, id, request_token)
       redirect request_token.authorize_url(:oauth_callback => callback_url)
     end
@@ -48,6 +52,11 @@ module Ahola
 
     # Where the user is returned to after authenticating our app at Twitter.
     get '/authorised/' do
+      if params[:denied]
+        # TODO: We should return to Remote somehow...?
+        return 500, "You chose not to authorise with Twitter. No problem, but we don't handle this very well at the moment, sorry."
+      end
+
       id = params[:id]
       consumer = Ahola::Twitter.consumer
 
@@ -67,7 +76,7 @@ module Ahola
           redirect params[:error_url]
         end
       rescue OAuth::Unauthorized
-        redirect params[:error_url]
+        redirect params[:error_url], 401
       end
     end
 
