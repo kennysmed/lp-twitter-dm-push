@@ -46,7 +46,7 @@ module Ahola
               :name => message.sender.name
               }
             }
-        redis.lpush(id, Marshal.dump(m))
+        redis.rpush(id, Marshal.dump(m))
       end
 
       # def event!(id, key, count=1)
@@ -62,8 +62,8 @@ module Ahola
         # what a sad interface
         # vals[0] is the answer to the first statement in the block
         # Hash[vals[0].map {|k,v| [k,v.to_i]}]
-        puts vals
-        vals
+        puts vals[0]
+        vals[0].map {|m| Marshal.load(m)}
       end
 
       def all

@@ -64,11 +64,9 @@ class Ahola::BergCloud
     subscription_id, endpoint = subscription_store.get(id)
 
     html = ''
-    puts "MESSAGES:"
-    puts messages
     messages.each do |message|
-      m = Marshal.load(message)
-      html += "<p><strong>#{m[:sender][:name]}</strong><br />#{m[:text]}</p>"
+      puts message
+      html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
     end
 
     http = request(endpoint).post(
