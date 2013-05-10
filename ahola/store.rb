@@ -39,27 +39,25 @@ module Ahola
       # end
 
       # We keep a list of messages for each user, in case they get loads.
-      # And a set of all the IDs of people who have 1 or more messages.
       def direct_message!(id, message)
         puts "store direct message"
         redis.lpush(id, message)
       end
 
-
-
       # def event!(id, key, count=1)
       #   redis.hincrby(id, :"#{key}s", count)
       # end
 
-      # def get_and_reset_counts!(id)
-      #   vals = redis.multi do
-      #     redis.hgetall(id)
-      #     redis.del(id)
-      #   end
-      #   # what a sad interface
-      #   # vals[0] is the answer to the first statement in the block
-      #   Hash[vals[0].map {|k,v| [k,v.to_i]}]
-      # end
+      def get_and_reset_events!(id)
+        vals = redis.multi do
+          redis.lrange(id, 0, -1)
+          redis.del(id)
+        end
+        # what a sad interface
+        # vals[0] is the answer to the first statement in the block
+        # Hash[vals[0].map {|k,v| [k,v.to_i]}]
+        vals[0]
+      end
 
       def all
         redis.keys

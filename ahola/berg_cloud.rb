@@ -55,7 +55,8 @@ class Ahola::BergCloud
     EventMachine.add_periodic_timer(10) do
       puts "doing it"
       events.each do |id|
-        print "AN EVENT! #{id}"
+        messages = events.get_and_reset_events!(id)
+        puts messages
       end
     end
   end
