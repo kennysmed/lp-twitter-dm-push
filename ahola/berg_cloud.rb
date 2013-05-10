@@ -63,7 +63,9 @@ class Ahola::BergCloud
   def do_ahola_behaviour(id, messages)
     subscription_id, endpoint = subscription_store.get(id)
 
-    html = '' 
+    html = ''
+    puts "MESSAGES:"
+    puts messages
     messages.each do |message|
       m = Marshal.load(message)
       html += "<p><strong>#{m[:sender][:name]}</strong><br />#{m[:text]}</p>"
