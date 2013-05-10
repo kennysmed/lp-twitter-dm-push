@@ -66,7 +66,7 @@ class Ahola::BergCloud
     html = '' 
     messages.each do |message|
       m = Marshal.load(message)
-      html += "<p><strong>#{m['sender']['name']}</strong><br />#{m['text']}</p>"
+      html += "<p><strong>#{m[:sender][:name]}</strong><br />#{m[:text]}</p>"
     end
 
     http = request(endpoint).post(
