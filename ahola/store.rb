@@ -63,7 +63,7 @@ module Ahola
         # vals[0] is the answer to the first statement in the block
         # Hash[vals[0].map {|k,v| [k,v.to_i]}]
         puts vals
-        vals[0]
+        vals
       end
 
       def all
