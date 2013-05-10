@@ -18,8 +18,8 @@ keepalive_url = ENV['AHOLA_URL']
 
 EM.run do
   processor.start
-  # processor.poll_registrations
-  # processor.start_emitting_events
+  processor.poll_registrations
+  processor.start_emitting_events
   # processor.hourly_flourish
 
   if keepalive_url

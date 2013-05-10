@@ -19,6 +19,54 @@ module Ahola
     end
 
 
+    # Keeps track of how many mentions, retweets, etc there are for a user.
+    class Event < RedisBase
+      def initialize
+        super
+        @redis = Redis::Namespace.new(:events, :redis => @redis)
+      end
+
+      # def mention!(id, count=1)
+      #   redis.hincrby(id, :mentions, count)
+      # end
+
+      # def retweet!(id, count=1)
+      #   redis.hincrby(id, :retweets, count)
+      # end
+
+      # def new_follower!(id, count=1)
+      #   redis.hincrby(id, :new_followers, count)
+      # end
+
+      # We keep a list of messages for each user, in case they get loads.
+      def direct_message!(message)
+        redis.lpush(id, message)
+      end
+
+      # def event!(id, key, count=1)
+      #   redis.hincrby(id, :"#{key}s", count)
+      # end
+
+      # def get_and_reset_counts!(id)
+      #   vals = redis.multi do
+      #     redis.hgetall(id)
+      #     redis.del(id)
+      #   end
+      #   # what a sad interface
+      #   # vals[0] is the answer to the first statement in the block
+      #   Hash[vals[0].map {|k,v| [k,v.to_i]}]
+      # end
+
+      def all
+        redis.keys
+      end
+
+      def each(&blk)
+        all.each(&blk)
+      end
+    end
+
+
     # Keeping a set of all the IDs who are registered with the publication.
     class Registration < RedisBase
       def add(id)
@@ -40,6 +88,21 @@ module Ahola
 
       def fresh!
         redis.del('new')
+      end
+    end
+
+
+    # We store the data (ID and endpoint) for each LP subscription here.
+    # Keyed by the uuid we've assigned to them.
+    class Subscription < RedisBase
+      def store(id, subscription_id, endpoint)
+        redis.hset(:subscription, id, Marshal.dump([subscription_id, endpoint]))
+      end
+
+      def get(id)
+        if data = redis.hget(:subscription, id)
+          Marshal.load(data)
+        end
       end
     end
 
@@ -94,61 +157,5 @@ module Ahola
       end
     end
 
-
-    # class Event < RedisBase
-    #   def initialize
-    #     super
-    #     @redis = Redis::Namespace.new(:events, :redis => @redis)
-    #   end
-
-    #   def mention!(id, count=1)
-    #     redis.hincrby(id, :mentions, count)
-    #   end
-
-    #   def retweet!(id, count=1)
-    #     redis.hincrby(id, :retweets, count)
-    #   end
-
-    #   def new_follower!(id, count=1)
-    #     redis.hincrby(id, :new_followers, count)
-    #   end
-
-    #   def event!(id, key, count=1)
-    #     redis.hincrby(id, :"#{key}s", count)
-    #   end
-
-    #   def get_and_reset_counts!(id)
-    #     vals = redis.multi do
-    #       redis.hgetall(id)
-    #       redis.del(id)
-    #     end
-    #     # what a sad interface
-    #     # vals[0] is the answer to the first statement in the block
-    #     Hash[vals[0].map {|k,v| [k,v.to_i]}]
-    #   end
-
-    #   def all
-    #     redis.keys
-    #   end
-
-    #   def each(&blk)
-    #     all.each(&blk)
-    #   end
-    # end
-
-
-    # We store the data (ID and endpoint) for each LP subscription here.
-    # Keyed by the uuid we've assigned to them.
-    class Subscription < RedisBase
-      def store(id, subscription_id, endpoint)
-        redis.hset(:subscription, id, Marshal.dump([subscription_id, endpoint]))
-      end
-
-      def get(id)
-        if data = redis.hget(:subscription, id)
-          Marshal.load(data)
-        end
-      end
-    end
   end
 end

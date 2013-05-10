@@ -56,6 +56,7 @@ module Ahola
         return 500, "You chose not to authorise with Twitter. No problem, but we don't handle this very well at the moment, sorry."
       end
 
+      # Our user-specific UUID.
       id = params[:id]
       consumer = Ahola::Twitter.consumer
 
