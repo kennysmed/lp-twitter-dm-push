@@ -65,7 +65,7 @@ class Ahola::BergCloud
 
     html = '' 
     messages.each do |message|
-      html += "<p><strong>#{message.sender}</strong><br />#{message.text}</p>"
+      html += "<p><strong>#{message.sender.name}</strong><br />#{message.text}</p>"
     end
 
     http = request(endpoint).post(
