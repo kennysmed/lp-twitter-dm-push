@@ -28,7 +28,7 @@ class Ahola::Background
     clients << stream
 
     stream.on_direct_message do |message|
-      bergcloud.direct_message(message)
+      bergcloud.direct_message(id, message)
     end
 
     # stream.on_timeline_status do |tweet|

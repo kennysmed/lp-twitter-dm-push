@@ -39,11 +39,13 @@ module Ahola
       # end
 
       # We keep a list of messages for each user, in case they get loads.
-      def direct_message!(message)
+      # And a set of all the IDs of people who have 1 or more messages.
+      def direct_message!(id, message)
         puts "store direct message"
-        puts message
         redis.lpush(id, message)
       end
+
+
 
       # def event!(id, key, count=1)
       #   redis.hincrby(id, :"#{key}s", count)
@@ -60,12 +62,10 @@ module Ahola
       # end
 
       def all
-        puts "    ALL"
         redis.keys
       end
 
       def each(&blk)
-        puts "  EACH"
         all.each(&blk)
       end
     end

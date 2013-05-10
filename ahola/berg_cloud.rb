@@ -30,8 +30,8 @@ class Ahola::BergCloud
   end
 
   # User received a direct message.
-  def direct_message(message)
-    events.direct_message!(message)
+  def direct_message(id, message)
+    events.direct_message!(id, message)
   end
 
   # def mention(id)
