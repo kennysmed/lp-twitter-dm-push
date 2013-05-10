@@ -49,6 +49,7 @@ module Ahola
       # end
 
       def get_and_reset_events!(id)
+        puts "get_and_reset_events #{id}"
         vals = redis.multi do
           redis.lrange(id, 0, -1)
           redis.del(id)
@@ -56,6 +57,7 @@ module Ahola
         # what a sad interface
         # vals[0] is the answer to the first statement in the block
         # Hash[vals[0].map {|k,v| [k,v.to_i]}]
+        puts vals
         vals[0]
       end
 
