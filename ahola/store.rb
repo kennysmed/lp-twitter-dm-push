@@ -41,6 +41,7 @@ module Ahola
       # We keep a list of messages for each user, in case they get loads.
       def direct_message!(message)
         puts "store direct message"
+        puts message
         redis.lpush(id, message)
       end
 
