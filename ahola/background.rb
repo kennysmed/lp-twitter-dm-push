@@ -76,9 +76,10 @@ class Ahola::Background
 
   def poll_registrations
     puts "polling registrations"
-    em_redis.blpop('kachina:new', 0).callback do |list, new_id|
+    em_redis.blpop('ahola:new', 0).callback do |list, new_id|
       stream = setup_stream(clients, new_id) # blocking redis :/
-      stream.userstream(:with => :user, :replies => :all)
+      # stream.userstream(:with => :user, :replies => :all)
+      stream.userstream(:with => :user)
       EventMachine.next_tick { poll_registrations }
     end
   end
