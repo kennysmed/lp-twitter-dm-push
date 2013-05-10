@@ -53,18 +53,31 @@ class Ahola::BergCloud
   def start_emitting
     puts "starting to emit bergcloud messages every 10s"
     EventMachine.add_periodic_timer(10) do
-      puts "doing it"
       events.each do |id|
-        puts "Looking for messages for #{id}"
         messages = events.get_and_reset_events!(id)
-        puts "And we've got..."
-        puts messages
+        do_ahola_behaviour(id, messages)
       end
     end
   end
 
-  def do_ahola_behaviour(id, counts)
-    # subscription_id, endpoint = subscription_store.get(id)
+  def do_ahola_behaviour(id, messages)
+    subscription_id, endpoint = subscription_store.get(id)
+
+    html = '' 
+    messages.each do |message|
+      html += "<p><strong>#{message.sender}</strong><br />#{message.text}</p>"
+    end
+
+    http = request(endpoint).post(
+      :head => { 'Content-Type' => 'text/html; charset=utf-8' },
+      :body => html
+    )
+    http.callback do
+      puts "#{http.response_header.status} response for #{subscription_id}"
+    end
+    http.errback do
+      puts "#{http.response_header.status} failed response for #{subscription_id}"
+    end
 
     # payload = {
     #   :peeper => counts['new_followers'].to_i,
