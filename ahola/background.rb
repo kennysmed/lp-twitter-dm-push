@@ -28,6 +28,7 @@ class Ahola::Background
     clients << stream
 
     stream.on_direct_message do |message|
+      puts "direct message received"
       bergcloud.direct_message(message)
     end
 
