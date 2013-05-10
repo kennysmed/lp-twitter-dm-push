@@ -31,7 +31,6 @@ class Ahola::BergCloud
 
   # User received a direct message.
   def direct_message(message)
-    puts "bergcloud dm received"
     events.direct_message!(message)
   end
 
