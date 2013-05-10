@@ -60,10 +60,12 @@ module Ahola
       # end
 
       def all
+        puts "    ALL"
         redis.keys
       end
 
       def each(&blk)
+        puts "  EACH"
         all.each(&blk)
       end
     end

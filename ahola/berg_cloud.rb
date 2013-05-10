@@ -53,6 +53,7 @@ class Ahola::BergCloud
   def start_emitting
     puts "starting to emit bergcloud messages every 10s"
     EventMachine.add_periodic_timer(10) do
+      puts "doing it"
       events.each do |id|
         print "AN EVENT! #{id}"
       end
