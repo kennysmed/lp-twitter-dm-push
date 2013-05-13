@@ -70,6 +70,8 @@ class Ahola::BergCloud
       html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
     end
 
+    puts "#{subscription_id} #{endpoint}"
+
     http = request(endpoint).post(
       :head => { 'Content-Type' => 'text/html; charset=utf-8' },
       :body => html
