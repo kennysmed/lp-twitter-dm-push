@@ -3,7 +3,7 @@ require 'em-http'
 require 'em-http/middleware/oauth'
 
 class Ahola::BergCloud
-  attr_accessor :subscription_store, :events
+  attr_accessor :subscription_store, :registrations, :events
 
   def initialize
     @subscription_store = Ahola::Store::Subscription.new
