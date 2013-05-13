@@ -69,7 +69,8 @@ class Ahola::Background
 
   def start
     clients.each do |client|
-      client.userstream(:with => :user, :replies => :all)
+      # client.userstream(:with => :user, :replies => :all)
+      client.userstream(:with => :user)
     end
   end
 

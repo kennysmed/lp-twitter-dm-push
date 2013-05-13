@@ -46,9 +46,9 @@ class Ahola::BergCloud
   #   events.new_follower!(id)
   # end
 
-  def flourish!(id)
-    do_ahola_behaviour(id, 'flourish' => 1)
-  end
+  # def flourish!(id)
+  #   do_ahola_behaviour(id, 'flourish' => 1)
+  # end
 
   def start_emitting
     puts "starting to emit bergcloud messages every 10s"
