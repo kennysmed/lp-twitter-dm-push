@@ -45,7 +45,7 @@ module Ahola
         m = {
               :created_at => message.created_at,
               :recipient => {
-                :name => message.sender.name,
+                :name => message.recipient.name,
                 :profile_image_url => message.recipient.profile_image_url,
                 :screen_name => message.recipient.screen_name,
               },
