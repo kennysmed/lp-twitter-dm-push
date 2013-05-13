@@ -5,7 +5,6 @@ require 'sinatra/base'
 require 'ahola/twitter'
 require 'ahola/store'
 
-
 module Ahola
   class Frontend < Sinatra::Base
     set :bind, '0.0.0.0'
@@ -101,6 +100,28 @@ module Ahola
       end
     end
 
+
+    get '/sample/' do
+      messages = [{
+            :created_at => Time.now(),
+            :recipipent => {
+              :name => 'Tom Coates',
+              :profile_image_url => 'https://si0.twimg.com/profile_images/1212320564/Screen_shot_2011-01-10_at_4.24.33_PM_normal.png',
+              :screen_name => 'tomcoates',
+            },
+            :sender => {
+              :name => 'Phil Gyford',
+              :profile_image_url => 'https://si0.twimg.com/profile_images/1167616130/james_200208_300x300_normal.jpg',
+              :screen_name => 'philgyford',
+            },
+            :text => "How long are you in town for? How about lunch tomorrow?",
+          }]
+
+      etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
+      content_type 'text/html; charset=utf-8'
+      template = ERB.new(File.open('views/publication.erb', 'r').read)
+      template.result(binding)
+    end
 
     post '/pretend/:id' do
       # [:mention, :retweet, :new_follower].each do |event|

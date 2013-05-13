@@ -41,10 +41,20 @@ module Ahola
       # We keep a list of messages for each user, in case they get loads.
       def direct_message!(id, message)
         puts "store direct message"
-        m = {:text => message.text,
-            :sender => {
-              :name => message.sender.name
-              }
+        # This is the data about a message that we store in the database:
+        m = {
+              :created_at => message.created_at,
+              :recipipent => {
+                :name => message.sender.name,
+                :profile_image_url => message.recipient.profile_image_url,
+                :screen_name => message.recipient.screen_name,
+              },
+              :sender => {
+                :name => message.sender.name,
+                :profile_image_url => message.sender.profile_image_url,
+                :screen_name => message.sender.screen_name,
+              },
+              :text => message.text,
             }
         redis.rpush(id, Marshal.dump(m))
       end
@@ -53,6 +63,8 @@ module Ahola
       #   redis.hincrby(id, :"#{key}s", count)
       # end
 
+      # Get any events (eg, direct messages) that have been stored.
+      # And then delete them from the store.
       def get_and_reset_events!(id)
         puts "get_and_reset_events #{id}"
         vals = redis.multi do
@@ -61,7 +73,6 @@ module Ahola
         end
         # what a sad interface
         # vals[0] is the answer to the first statement in the block
-        # Hash[vals[0].map {|k,v| [k,v.to_i]}]
         vals[0].map {|m| Marshal.load(m)}
       end
 

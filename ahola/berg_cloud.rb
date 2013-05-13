@@ -52,6 +52,8 @@ class Ahola::BergCloud
   #   do_ahola_behaviour(id, 'flourish' => 1)
   # end
 
+
+  # Check for new messages every so often.
   def start_emitting
     puts "starting to emit bergcloud messages every 10s"
     EventMachine.add_periodic_timer(10) do
@@ -62,14 +64,14 @@ class Ahola::BergCloud
     end
   end
 
+
+  # Output messages to the printer.
   def do_ahola_behaviour(id, messages)
     subscription_id, endpoint = subscription_store.get(id)
 
-    # html = ''
-    # messages.each do |message|
-    #   html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
-    # end
-
+    # We'll use the messages variable in the template.
+    # Each message has data which is defined and stored in
+    # Event.direct_message().
     template = ERB.new(File.open('views/publication.erb', 'r').read)
 
     http = request(endpoint).post(
@@ -80,6 +82,7 @@ class Ahola::BergCloud
     http.callback do
       puts "#{http.response_header.status} response for #{subscription_id}"
       if http.response_header.status == 410
+        # This user has unsubscribed, so we must remove their registration.
         puts "deleting registration"
         registrations.del(id) 
       end
