@@ -24,11 +24,8 @@ class Ahola::BergCloud
       :access_token => self[:access_token],
       :access_token_secret => self[:access_token_secret]
     }
-    puts url
-    puts credentials
     conn = EventMachine::HttpRequest.new(url)
     conn.use EventMachine::Middleware::OAuth, credentials
-    puts "END OF REQUEST() - returning"
     conn
   end
 
@@ -68,12 +65,8 @@ class Ahola::BergCloud
 
     html = ''
     messages.each do |message|
-      puts message
-      puts message[:text]
       html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
     end
-
-    puts "#{subscription_id} #{endpoint}"
 
     http = request(endpoint).post(
       :head => { 'Content-Type' => 'text/html; charset=utf-8' },
