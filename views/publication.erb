@@ -55,7 +55,7 @@
     <li><img src="<%= m[:sender][:profile_image_url] %>" class="dither" width="48" height="48" />
       <p>
         <strong><%= m[:sender][:name] %></strong> (@<%= m[:sender][:screen_name] %>)<br />
-        <%= m[:text] %><br />
+        <%= m[:text].gsub(/(\r)?\n/, "<br/>") %><br />
         <%= m[:created_at].strftime('%l:%M %p - %-d %B %Y') %>
       </p>
     </li>

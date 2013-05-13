@@ -114,7 +114,7 @@ module Ahola
               :profile_image_url => 'https://si0.twimg.com/profile_images/1167616130/james_200208_300x300_normal.jpg',
               :screen_name => 'philgyford',
             },
-            :text => "How long are you in town for? How about lunch tomorrow?",
+            :text => "How long are you in town for?\nHow about lunch tomorrow?",
           }]
 
       etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
