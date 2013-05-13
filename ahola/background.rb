@@ -103,6 +103,6 @@ class Ahola::Background
 
 
   def em_redis
-    @redis ||= EM::Hiredis.connect(ENV['REDISTOGO_URL'] || "redis://localhost:6379")
+    @redis ||= EM::Hiredis.connect(ENV['REDISCLOUD_URL'] || "redis://localhost:6379")
   end
 end
