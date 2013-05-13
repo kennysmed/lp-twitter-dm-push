@@ -66,6 +66,7 @@ class Ahola::BergCloud
     html = ''
     messages.each do |message|
       puts message
+      puts message[:text]
       html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
     end
 

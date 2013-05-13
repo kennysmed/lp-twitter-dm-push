@@ -62,7 +62,6 @@ module Ahola
         # what a sad interface
         # vals[0] is the answer to the first statement in the block
         # Hash[vals[0].map {|k,v| [k,v.to_i]}]
-        puts vals[0]
         vals[0].map {|m| Marshal.load(m)}
       end
 
@@ -79,7 +78,6 @@ module Ahola
     # Keeping a set of all the IDs who are registered with the publication.
     class Registration < RedisBase
       def add(id)
-        puts "adding registration"
         redis.sadd('registrations', id)
         redis.lpush('new', id)
       end
