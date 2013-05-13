@@ -1,6 +1,7 @@
 require 'ahola/store'
 require 'em-http'
 require 'em-http/middleware/oauth'
+require 'erb'
 
 class Ahola::BergCloud
   attr_accessor :subscription_store, :registrations, :events
@@ -64,14 +65,16 @@ class Ahola::BergCloud
   def do_ahola_behaviour(id, messages)
     subscription_id, endpoint = subscription_store.get(id)
 
-    html = ''
-    messages.each do |message|
-      html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
-    end
+    # html = ''
+    # messages.each do |message|
+    #   html += "<p><strong>#{message[:sender][:name]}</strong><br />#{message[:text]}</p>"
+    # end
+
+    template = ERB.new(File.open('views/publication.erb', 'r').read)
 
     http = request(endpoint).post(
       :head => { 'Content-Type' => 'text/html; charset=utf-8' },
-      :body => html
+      :body => template.result
     )
 
     http.callback do
