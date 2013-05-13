@@ -44,7 +44,7 @@ module Ahola
         # This is the data about a message that we store in the database:
         m = {
               :created_at => message.created_at,
-              :recipipent => {
+              :recipient => {
                 :name => message.sender.name,
                 :profile_image_url => message.recipient.profile_image_url,
                 :screen_name => message.recipient.screen_name,
