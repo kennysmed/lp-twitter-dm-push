@@ -7,6 +7,7 @@ class Ahola::BergCloud
 
   def initialize
     @subscription_store = Ahola::Store::Subscription.new
+    @registrations = Ahola::Store::Registration.new
     @events = Ahola::Store::Event.new
     @config = YAML.load_file('auth.yml') if File.exists?('auth.yml')
     # @counts = Hash.new {|h, k| h[k] = Hash.new(0) }
@@ -72,8 +73,13 @@ class Ahola::BergCloud
       :head => { 'Content-Type' => 'text/html; charset=utf-8' },
       :body => html
     )
+
     http.callback do
       puts "#{http.response_header.status} response for #{subscription_id}"
+      if http.response_header.status == 410
+        puts "deleting registration"
+        registrations.del(id) 
+      end
     end
     http.errback do
       puts "#{http.response_header.status} failed response for #{subscription_id}"
