@@ -74,7 +74,7 @@ class Ahola::BergCloud
 
     http = request(endpoint).post(
       :head => { 'Content-Type' => 'text/html; charset=utf-8' },
-      :body => template.result
+      :body => template.result(binding)
     )
 
     http.callback do
