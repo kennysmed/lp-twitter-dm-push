@@ -20,9 +20,9 @@
 <body>
 
   <p>Direct messages:</p>
-  
+
   <ul>
-  <% @messages.each do |m| %>
+  <% messages.each do |m| %>
     <li><strong><%= m[:sender][:name] %></strong> <br />
       <%= m[:text] %>
     </li>
