@@ -104,7 +104,7 @@ module Ahola
     get '/sample/' do
       messages = [{
             :created_at => Time.now(),
-            :recipipent => {
+            :recipient => {
               :name => 'Tom Coates',
               :profile_image_url => 'https://si0.twimg.com/profile_images/1212320564/Screen_shot_2011-01-10_at_4.24.33_PM_normal.png',
               :screen_name => 'tomcoates',

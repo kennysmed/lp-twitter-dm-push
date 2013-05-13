@@ -5,29 +5,62 @@
   <title>Twitter Direct Messages Push</title>
 
   <style type="text/css">
+    body, h1, p, ul, li {
+      margin: 0;
+      padding: 0;
+    }
     body {
       background: #fff;
       color: #000;
       width: 384px;
-      padding: 0;
-      margin: 0;
       font-family: Arial, sans-serif;
       font-size: 16px;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 10px 5px;
+    }
+    p.recipient {
+      margin: 0 5px 10px 5px;
+    }
+    ul {
+      border-top: 1px solid #000;
+    }
+    li {
+      padding: 5px;
+      border-bottom: 1px solid #000;
+    }
+    li img {
+      margin-right: 10px;
+      display: inline-block;
+      border-radius: 5px;
+      vertical-align: top;
+      margin-top: 3px;
+    }
+    li p {
+      width: 312px;
+      display: inline-block;
+      line-height: 20px;
     }
   </style>
 
 </head>
 <body>
 
-  <p>Direct messages:</p>
+  <h1>New Twitter Direct Message</h1>
+  <p class="recipient">For <strong><%= messages[0][:recipient][:name] %></strong> (@<%= messages[0][:recipient][:screen_name] %>)</p>
 
   <ul>
   <% messages.each do |m| %>
-    <li><strong><%= m[:sender][:name] %></strong> <br />
-      <%= m[:text] %>
+    <li><img src="<%= m[:sender][:profile_image_url] %>" class="dither" width="48" height="48" />
+      <p>
+        <strong><%= m[:sender][:name] %></strong> (@<%= m[:sender][:screen_name] %>)<br />
+        <%= m[:text] %><br />
+        <%= m[:created_at].strftime('%l:%M %p - %-d %B %Y') %>
+      </p>
     </li>
   <% end %>
-</ul>
+  </ul>
 
 </body>
 </html>
