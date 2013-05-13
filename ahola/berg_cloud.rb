@@ -9,7 +9,7 @@ class Ahola::BergCloud
     @subscription_store = Ahola::Store::Subscription.new
     @events = Ahola::Store::Event.new
     @config = YAML.load_file('auth.yml') if File.exists?('auth.yml')
-    @counts = Hash.new {|h, k| h[k] = Hash.new(0) }
+    # @counts = Hash.new {|h, k| h[k] = Hash.new(0) }
   end
 
   def [](key)
@@ -24,8 +24,11 @@ class Ahola::BergCloud
       :access_token => self[:access_token],
       :access_token_secret => self[:access_token_secret]
     }
+    puts url
+    puts credentials
     conn = EventMachine::HttpRequest.new(url)
     conn.use EventMachine::Middleware::OAuth, credentials
+    puts "END OF REQUEST() - returning"
     conn
   end
 
