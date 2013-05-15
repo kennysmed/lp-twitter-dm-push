@@ -13,34 +13,82 @@
       background: #fff;
       color: #000;
       width: 384px;
-      font-family: Arial, sans-serif;
+      font-family: Georgia, serif;
       font-size: 16px;
     }
     h1 {
+      font-family: Arial, sans-serif;
+      font-size: 29px;
+      background: url(<%= url('/img/hr_thick.png') %>) 0 100% no-repeat;
+      padding: 12px 0 16px 0;
+      margin-bottom: 15px;
+    }
+    .person {
       font-size: 20px;
-      margin: 10px 5px;
+      line-height: 24px;
     }
-    p.recipient {
-      margin: 0 5px 10px 5px;
-    }
-    ul {
-      border-top: 1px solid #000;
-    }
-    li {
-      padding: 5px;
-      border-bottom: 1px solid #000;
-    }
-    li img {
-      margin-right: 10px;
+    .person-address {
       display: inline-block;
-      border-radius: 5px;
+      font-weight: bold;
+      width: 45px;
+      margin-right: 3px;
       vertical-align: top;
-      margin-top: 3px;
     }
-    li p {
-      width: 312px;
+    .person-name {
       display: inline-block;
-      line-height: 20px;
+      font-weight: bold;
+      width: 331px;
+    }
+
+    .message {
+      margin-top: 15px;
+      margin-bottom: 15px;
+      width: 384px;
+      background: url(<%= url('/img/message_body.png') %>) 0 0 repeat-y;
+    }
+    .message .person {
+      padding-top: 13px;
+      background: url(<%= url('/img/message_top.png') %>) 0 0 no-repeat;
+      padding-left: 15px;
+      padding-right: 11px;
+    }
+    .message .person-address {
+      width: 65px;
+      margin-right: 1px;
+    }
+    .message .person-name {
+      font-weight: normal;
+      width: 287px;
+    }
+    .message-body {
+      margin-top: 11px;
+      border-top: 1px solid #000;
+      padding-top: 16px;
+      margin-left: 11px;
+      margin-right: 11px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #000;
+      margin-bottom: 14px;
+    }
+    .message-avatar {
+      margin-right: 12px;
+      display: inline-block;
+      vertical-align: top;
+      margin-top: 5px;
+    }
+    .message-text {
+      width: 287px;
+      display: inline-block;
+      font-weight: bold;
+      font-size: 24px;
+      line-height: 29px;
+    }
+    .message-time {
+      padding-left: 11px;
+      padding-right: 11px;
+      font-size: 20px;
+      padding-bottom: 18px;
+      background: url(<%= url('/img/message_bottom.png') %>) 0 100% no-repeat;
     }
   </style>
 
@@ -48,16 +96,26 @@
 <body>
 
   <h1>New Twitter Direct Message</h1>
-  <p class="recipient">For <strong><%= messages[0][:recipient][:name] %></strong> (@<%= messages[0][:recipient][:screen_name] %>)</p>
+
+  <p class="person">
+    <span class="person-address">For:</span>
+    <span class="person-name"><%= messages[0][:recipient][:name] %> (@<%= messages[0][:recipient][:screen_name] %>)</span>
+  </p>
 
   <ul>
   <% messages.each do |m| %>
-    <li><img src="<%= m[:sender][:profile_image_url] %>" class="dither" width="48" height="48" />
-      <p>
-        <strong><%= m[:sender][:name] %></strong> (@<%= m[:sender][:screen_name] %>)<br />
-        <%= m[:text].gsub(/(\r)?\n/, "<br/>") %><br />
-        <%= m[:created_at].strftime('%l:%M %p - %-d %B %Y') %>
+    <li class="message">
+      <p class="person">
+        <span class="person-address">From:</span>
+        <span class="person-name"><%= messages[0][:sender][:name] %> (@<%= messages[0][:sender][:screen_name] %>)</span>
       </p>
+      <p class="message-body">
+        <img src="<%= m[:sender][:profile_image_url] %>" class="message-avatar dither" width="59" height="59" />
+        <span class="message-text">
+          <%= m[:text].gsub(/(\r)?\n/, "<br/>") %>
+        </span>
+      </p>
+      <p class="message-time"><%= m[:created_at].strftime('<strong>%l:%M %p</strong>, %-d %B %Y') %></p>
     </li>
   <% end %>
   </ul>

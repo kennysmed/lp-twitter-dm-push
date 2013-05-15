@@ -23,3 +23,9 @@ In progress.
     BERGCLOUD_CONSUMER_SECRET
     BERGCLOUD_ACCESS_TOKEN
     BERGCLOUD_ACCESS_TOKEN_SECRET
+
+
+
+    uri = URI.parse(ENV['REDISCLOUD_URL'])
+    redis = ::Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
+    redis.keys
