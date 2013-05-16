@@ -90,24 +90,5 @@ class Ahola::BergCloud
     http.errback do
       puts "#{http.response_header.status} failed response for #{subscription_id}"
     end
-
-    # payload = {
-    #   :peeper => counts['new_followers'].to_i,
-    #   :pecker => counts['retweets'].to_i,
-    #   :swan => counts['mentions'].to_i,
-    #   :flourish => counts['flourish'].to_i,
-    # }
-    # puts "#{subscription_id} sending #{payload.inspect}"
-
-    # http = request(endpoint).post(
-    #   :head => { 'Content-Type' => 'application/json' },
-    #   :body => payload.to_json
-    # )
-    # http.callback do
-    #   puts "#{http.response_header.status} response for #{subscription_id}"
-    # end
-    # http.errback do
-    #   puts "#{http.response_header.status} failed response for #{subscription_id}"
-    # end
   end
 end
