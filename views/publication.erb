@@ -75,8 +75,6 @@
       display: inline-block;
       vertical-align: top;
       margin-top: 5px;
-      width: 59px;
-      height: 59px;
     }
     .message-text {
       width: 287px;
@@ -112,7 +110,7 @@
         <span class="person-name"><%= messages[0][:sender][:name] %> (@<%= messages[0][:sender][:screen_name] %>)</span>
       </p>
       <p class="message-body">
-        <img src="<%= m[:sender][:profile_image_url] %>" class="message-avatar dither" width="59" height="59" />
+        <img src="<%= m[:sender][:profile_image_url] %>" class="message-avatar dither" width="59" />
         <span class="message-text">
           <%= m[:text].gsub(/(\r)?\n/, "<br/>") %>
         </span>
