@@ -5,7 +5,7 @@
   <title>Twitter Direct Messages Push</title>
 
   <%# NOTE: This template isn't used only in Sinatra, so we can't use any Sinatra-specific methods, such as url(). %>
-  
+
   <style type="text/css">
     body, h1, p, ul, li {
       margin: 0;
@@ -21,7 +21,7 @@
     h1 {
       font-family: Arial, sans-serif;
       font-size: 28px;
-      background: url(/img/hr_thick.png) 0 100% no-repeat;
+      background: url(<%= ENV['AHOLA_URL'] %>img/hr_thick.png) 0 100% no-repeat;
       padding: 12px 0 16px 0;
       margin-bottom: 15px;
     }
@@ -46,11 +46,11 @@
       margin-top: 15px;
       margin-bottom: 15px;
       width: 384px;
-      background: url(/img/message_body.png) 0 0 repeat-y;
+      background: url(<%= ENV['AHOLA_URL'] %>img/message_body.png) 0 0 repeat-y;
     }
     .message .person {
       padding-top: 13px;
-      background: url(/img/message_top.png) 0 0 no-repeat;
+      background: url(<%= ENV['AHOLA_URL'] %>img/message_top.png) 0 0 no-repeat;
       padding-left: 15px;
       padding-right: 11px;
     }
@@ -90,7 +90,7 @@
       padding-right: 11px;
       font-size: 20px;
       padding-bottom: 18px;
-      background: url(/img/message_bottom.png) 0 100% no-repeat;
+      background: url(<%= ENV['AHOLA_URL'] %>img/message_bottom.png) 0 100% no-repeat;
     }
   </style>
 

@@ -7,7 +7,9 @@ In progress.
     # Number of seconds.
     AHOLA_KEEPALIVE
 
-    # URL to ping to keep things running, eg publication's root level URL.
+    # URL to ping to keep things running, and link to images in CSS.
+    # The  publication's root level URL.
+    # eg http://my-app-name.herokuapp.com/
     AHOLA_URL
 
     # Created when you add the RedisCloud Heroku add-on.
@@ -24,8 +26,3 @@ In progress.
     BERGCLOUD_ACCESS_TOKEN
     BERGCLOUD_ACCESS_TOKEN_SECRET
 
-
-
-    uri = URI.parse(ENV['REDISCLOUD_URL'])
-    redis = ::Redis.new(:host => uri.host, :port => uri.port, :password => uri.password)
-    redis.keys
