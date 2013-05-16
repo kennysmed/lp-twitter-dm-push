@@ -117,7 +117,7 @@ module Ahola
             :text => "How long are you in town for?\nHow about lunch tomorrow?",
           }]
 
-      etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
+      etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%M%H%d%m%Y'))
       content_type 'text/html; charset=utf-8'
       template = ERB.new(File.open('views/publication.erb', 'r').read)
       template.result(binding)
