@@ -28,7 +28,11 @@ class Ahola::Background
     clients << stream
 
     stream.on_direct_message do |message|
-      bergcloud.direct_message(id, message)
+      # We get notified of DMs the user has sent, as well as received.
+      # We want to ignore those.
+      if message[:sender][:id] != user_id
+        bergcloud.direct_message(id, message)
+      end
     end
 
     # stream.on_timeline_status do |tweet|
