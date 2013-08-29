@@ -2,8 +2,9 @@ require 'json'
 require 'uuid'
 require 'uri'
 require 'sinatra/base'
-require 'ahola/twitter'
+require 'ahola/config'
 require 'ahola/store'
+require 'ahola/twitter'
 
 module Ahola
   class Frontend < Sinatra::Base
@@ -116,6 +117,8 @@ module Ahola
             },
             :text => "How long are you in town for?\nHow about lunch tomorrow?",
           }]
+
+      @config = Ahola::Config.new
 
       etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
       content_type 'text/html; charset=utf-8'

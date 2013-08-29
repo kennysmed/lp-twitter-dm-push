@@ -3,6 +3,7 @@ $stdout.sync = true
 
 require 'thin'
 require 'eventmachine'
+require 'ahola/config'
 require 'ahola/frontend'
 require 'ahola/background'
 require 'em-http'
@@ -13,21 +14,20 @@ require 'active_support/core_ext/time/calculations'
 processor = Ahola::Background.new
 processor.setup_registrations
 
-keepalive_time = ENV['AHOLA_KEEPALIVE'] || 1200
-keepalive_url = ENV['AHOLA_URL']
+config = Ahola::Config.new
 
 EM.run do
   processor.start
   processor.poll_registrations
   processor.start_emitting_events
-  # processor.hourly_flourish
 
-  if keepalive_url
-    EM.add_periodic_timer(keepalive_time) do
-      http = EventMachine::HttpRequest.new(keepalive_url).get.callback do
+  if config[:base_url]
+    EM.add_periodic_timer(config[:keepalive_time] || 1200) do
+      http = EventMachine::HttpRequest.new(config[:base_url]).get.callback do
         puts "keepalive: #{http.response_header.status}"
       end
     end
   end
+
   Ahola::Frontend.run!
 end

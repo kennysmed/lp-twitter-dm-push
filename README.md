@@ -8,14 +8,14 @@ In progress. Start with:
 ## Environment variables
 
     # Number of seconds.
-    AHOLA_KEEPALIVE
+    KEEPALIVE_TIME 
 
     # URL to ping to keep things running, and link to images in CSS.
     # The  publication's root level URL.
     # eg http://my-app-name.herokuapp.com/
-    AHOLA_URL
+    BASE_URL
 
-    # Created when you add the RedisCloud Heroku add-on.
+    # Created when you add the RedisCloud Heroku add-on. Optional.
     # If not present, then it's assumed Redis is running on localhost.
     REDISCLOUD_URL
 
@@ -28,4 +28,12 @@ In progress. Start with:
     BERGCLOUD_CONSUMER_SECRET
     BERGCLOUD_ACCESS_TOKEN
     BERGCLOUD_ACCESS_TOKEN_SECRET
+
+Or, these can all be set in a `config.yml` file at the same level as
+`ahola.rb`. All the keys should be lowercase, eg:
+
+	keepalive_time: 1200
+	base_url: http://0.0.0.0:5000/
+	...
+
 

@@ -7,8 +7,9 @@ module Ahola
       attr_accessor :redis
 
       def initialize
-        if ENV['REDISCLOUD_URL']
-          uri = URI.parse(ENV['REDISCLOUD_URL'])
+        config = Ahola::Config.new
+        if config[:rediscloud_url]
+          uri = URI.parse(config[:rediscloud_url])
           redis = ::Redis.new(:host => uri.host, :port => uri.port,
                                                     :password => uri.password)
         else

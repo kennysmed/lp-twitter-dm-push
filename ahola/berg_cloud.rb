@@ -1,3 +1,4 @@
+require 'ahola/config'
 require 'ahola/store'
 require 'em-http'
 require 'em-http/middleware/oauth'
@@ -10,21 +11,16 @@ class Ahola::BergCloud
     @subscription_store = Ahola::Store::Subscription.new
     @registrations = Ahola::Store::Registration.new
     @events = Ahola::Store::Event.new
-    @config = YAML.load_file('auth.yml') if File.exists?('auth.yml')
+    @config = Ahola::Config.new
     # @counts = Hash.new {|h, k| h[k] = Hash.new(0) }
-  end
-
-  def [](key)
-    key = "bergcloud_#{key}"
-    ENV[key.upcase] || @config[key]
   end
 
   def request(url)
     credentials = {
-      :consumer_key => self[:consumer_key],
-      :consumer_secret => self[:consumer_secret],
-      :access_token => self[:access_token],
-      :access_token_secret => self[:access_token_secret]
+      :consumer_key => @config[:bergcloud_consumer_key],
+      :consumer_secret => @config[:bergcloud_consumer_secret],
+      :access_token => @config[:bergcloud_access_token],
+      :access_token_secret => @config[:bergcloud_access_token_secret]
     }
     conn = EventMachine::HttpRequest.new(url)
     conn.use EventMachine::Middleware::OAuth, credentials

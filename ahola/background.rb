@@ -1,3 +1,4 @@
+require 'ahola/config'
 require 'ahola/store'
 require 'ahola/twitter'
 require 'ahola/berg_cloud'
@@ -15,6 +16,7 @@ class Ahola::Background
     @registrations = Ahola::Store::Registration.new
     @twitter_data = Ahola::Store::TwitterData.new
     @bergcloud = Ahola::BergCloud.new
+    @config = Ahola::Config.new
 
     @clients = []
   end
@@ -107,6 +109,6 @@ class Ahola::Background
 
 
   def em_redis
-    @redis ||= EM::Hiredis.connect(ENV['REDISCLOUD_URL'] || "redis://localhost:6379")
+    @redis ||= EM::Hiredis.connect(@config[:rediscloud_url] || "redis://localhost:6379")
   end
 end
