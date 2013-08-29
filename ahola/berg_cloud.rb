@@ -11,16 +11,19 @@ class Ahola::BergCloud
     @subscription_store = Ahola::Store::Subscription.new
     @registrations = Ahola::Store::Registration.new
     @events = Ahola::Store::Event.new
-    @config = Ahola::Config.new
     # @counts = Hash.new {|h, k| h[k] = Hash.new(0) }
+  end
+
+  def config
+    @config ||= Ahola::Config.new
   end
 
   def request(url)
     credentials = {
-      :consumer_key => @config[:bergcloud_consumer_key],
-      :consumer_secret => @config[:bergcloud_consumer_secret],
-      :access_token => @config[:bergcloud_access_token],
-      :access_token_secret => @config[:bergcloud_access_token_secret]
+      :consumer_key => config[:bergcloud_consumer_key],
+      :consumer_secret => config[:bergcloud_consumer_secret],
+      :access_token => config[:bergcloud_access_token],
+      :access_token_secret => config[:bergcloud_access_token_secret]
     }
     conn = EventMachine::HttpRequest.new(url)
     conn.use EventMachine::Middleware::OAuth, credentials

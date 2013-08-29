@@ -16,9 +16,12 @@ class Ahola::Background
     @registrations = Ahola::Store::Registration.new
     @twitter_data = Ahola::Store::TwitterData.new
     @bergcloud = Ahola::BergCloud.new
-    @config = Ahola::Config.new
 
     @clients = []
+  end
+
+  def config
+    @config ||= Ahola::Config.new
   end
 
   def setup_stream(clients, id)
@@ -109,6 +112,6 @@ class Ahola::Background
 
 
   def em_redis
-    @redis ||= EM::Hiredis.connect(@config[:rediscloud_url] || "redis://localhost:6379")
+    @redis ||= EM::Hiredis.connect(config[:rediscloud_url] || "redis://localhost:6379")
   end
 end

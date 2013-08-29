@@ -7,7 +7,6 @@ module Ahola
       attr_accessor :redis
 
       def initialize
-        config = Ahola::Config.new
         if config[:rediscloud_url]
           uri = URI.parse(config[:rediscloud_url])
           redis = ::Redis.new(:host => uri.host, :port => uri.port,
@@ -16,6 +15,10 @@ module Ahola
           redis = ::Redis.new
         end
         @redis = ::Redis::Namespace.new(:ahola, :redis => redis)
+      end
+
+      def config
+        @config ||= Ahola::Config.new
       end
     end
 

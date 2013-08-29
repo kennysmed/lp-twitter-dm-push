@@ -5,14 +5,14 @@ require 'tweetstream'
 module Ahola 
   class Twitter
 
-    def initialize
-      @config = Ahola::Config.new
+    def config
+      @config ||= Ahola::Config.new
     end
 
     def self.consumer
       return OAuth::Consumer.new(
-        @config[:twitter_consumer_key],
-        @config[:twitter_consumer_secret],
+        config[:twitter_consumer_key],
+        config[:twitter_consumer_secret],
         :site => "https://api.twitter.com")
     end
 

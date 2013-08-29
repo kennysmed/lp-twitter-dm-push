@@ -118,7 +118,7 @@ module Ahola
             :text => "How long are you in town for?\nHow about lunch tomorrow?",
           }]
 
-      @config = Ahola::Config.new
+      config = Ahola::Config.new
 
       etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
       content_type 'text/html; charset=utf-8'
