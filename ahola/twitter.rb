@@ -5,7 +5,7 @@ require 'tweetstream'
 module Ahola 
   class Twitter
 
-    def config
+    def self.config
       @config ||= Ahola::Config.new
     end
 
