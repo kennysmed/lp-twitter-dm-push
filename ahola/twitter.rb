@@ -10,7 +10,6 @@ module Ahola
     end
 
     def self.consumer
-      p "KEY: #{config[:twitter_consumer_key]}"
       return OAuth::Consumer.new(
         config[:twitter_consumer_key],
         config[:twitter_consumer_secret],
