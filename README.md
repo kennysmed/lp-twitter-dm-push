@@ -1,6 +1,9 @@
 # Twitter Direct Messages Push publication
 
-In progress.
+In progress. Start with:
+
+	$ forman start
+
 
 ## Environment variables
 
