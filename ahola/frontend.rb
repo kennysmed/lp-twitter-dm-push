@@ -8,6 +8,11 @@ require 'ahola/twitter'
 
 module Ahola
   class Frontend < Sinatra::Base
+    configure :production, :development do
+      enable :logging
+    end
+
+    set :sessions, true
     set :bind, '0.0.0.0'
     set :public_folder, 'public'
 
