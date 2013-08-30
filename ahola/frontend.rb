@@ -38,10 +38,9 @@ module Ahola
     # The user has come here from the Remote, to authenticate our publication's
     # use of their Twitter account.
     get '/configure/' do
-      # We assign an id for each user.
-      id = UUID.generate
+      user_id = UUID.generate
       consumer = Ahola::Twitter.consumer
-      query = URI.encode_www_form(:id => id,
+      query = URI.encode_www_form(:id => user_id,
                                   :return_url => params[:return_url],
                                   :error_url => params[:error_url])
       callback_url = url('/authorised/') + "?" + query
@@ -51,7 +50,7 @@ module Ahola
       rescue OAuth::Unauthorized
         redirect params[:error_url]
       end
-      token_store.store(:request_token, id, request_token)
+      token_store.store(:request_token, user_id, request_token)
       redirect request_token.authorize_url(:oauth_callback => callback_url)
     end
 
@@ -63,20 +62,19 @@ module Ahola
         return 500, "You chose not to authorise with Twitter. No problem, but we don't handle this very well at the moment, sorry."
       end
 
-      # Our user-specific UUID.
-      id = params[:id]
+      user_id = params[:id]
       consumer = Ahola::Twitter.consumer
 
       begin
-        if request_token = token_store.get(:request_token, id, consumer)
+        if request_token = token_store.get(:request_token, user_id, consumer)
           access_token = request_token.get_access_token(
                                     :oauth_verifier => params[:oauth_verifier])
-          token_store.store(:access_token, id, access_token)
-          twitter_data.store(id,
+          token_store.store(:access_token, user_id, access_token)
+          twitter_data.store(user_id,
                              access_token.params['user_id'],
                              access_token.params['screen_name'])
-          token_store.del(:request_token, id)
-          query = URI.encode_www_form("config[id]" => id)
+          token_store.del(:request_token, user_id)
+          query = URI.encode_www_form("config[id]" => user_id)
           # All good, send the user back to Remote.
           redirect params[:return_url] + "?" + query
         else
@@ -95,13 +93,13 @@ module Ahola
       subscription_id = params[:subscription_id]
       endpoint = params[:endpoint]
       config = JSON.parse(params[:config])
-      id = config['id']
+      user_id = config['id']
       content_type :json
 
       if access_token = token_store.get(
-                                    :access_token, id, Ahola::Twitter.consumer)
-        subscription_store.store(id, subscription_id, endpoint)
-        registrations.add(id)
+                                  :access_token, user_id, Ahola::Twitter.consumer)
+        subscription_store.store(user_id, subscription_id, endpoint)
+        registrations.add(user_id)
         {:valid => true}.to_json
       else
         {:valid => false}.to_json
