@@ -48,6 +48,81 @@ describe "Frontend" do
     end
   end
 
+  describe "getting /configure/" do
+
+    describe "successfully" do
+      before :all do
+        @return_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_return'
+        @error_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+        get "/configure/?return_url=#{@return_url}&error_url=#{@error_url}"
+        redirect_uri = ::URI.parse(last_response.headers['Location'])
+        @redirect_query = ::CGI.parse(redirect_uri.query)
+      end
+
+      it "redirects" do
+        last_response.status.should == 302
+      end
+
+      it "redirects to the correct domain" do
+        last_response.headers['Location'].should start_with('https://api.twitter.com/oauth/authorize')
+      end
+
+      it "sends an oauth_token" do
+        @redirect_query.should have_key('oauth_token')
+      end
+
+      describe "generates a callback_url" do
+        before :all do
+          callback_uri = ::URI.parse(@redirect_query['oauth_callback'][0])
+          @callback_query = ::CGI.parse(callback_uri.query)
+        end
+
+        it "containing a user_id" do
+          @callback_query.should have_key('id')
+        end
+
+        it "contains a user_id of the correct length" do
+          @callback_query['id'][0].length.should eq(36)
+        end
+
+        it "containing a return_url" do
+          @callback_query.should have_key('return_url')
+        end
+
+        it "containing the correct return_url" do
+          @callback_query['return_url'][0].should eq @return_url
+        end
+
+        it "containing a error_url" do
+          @callback_query.should have_key('error_url')
+        end
+
+        it "containing the correct error_url" do
+          @callback_query['error_url'][0].should eq @error_url
+        end
+      end
+
+    end
+
+
+    it "requires a return_url" do
+      get '/configure/?error_url=http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+      last_response.status.should == 400
+    end
+    it "requires an error_url" do
+      get '/configure/?return_url=http://remote.bergcloud.com/publications/145/subscription_configuration_return'
+      last_response.status.should == 400
+    end
+    it "requires a bergcloud.com return_url" do
+      get '/configure/?return_url=http://remote.berglondon.com/publications/145/subscription_configuration_return&error_url=http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+      last_response.status.should == 403
+    end
+    it "requires a bergcloud.com error_url" do
+      get '/configure/?return_url=http://remote.bergcloud.com/publications/145/subscription_configuration_return&error_url=http://remote.berglondon.com/publications/145/subscription_configuration_failure'
+      last_response.status.should == 403
+    end
+  end
+
   describe "Helpers" do
     describe "format_title" do
       it "returns the correct title" do

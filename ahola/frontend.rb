@@ -38,11 +38,18 @@ module Ahola
     # The user has come here from the Remote, to authenticate our publication's
     # use of their Twitter account.
     get '/configure/' do
+      return 400, 'No return_url parameter was provided' if !params[:return_url]
+      return 400, 'No error_url parameter was provided' if !params[:error_url]
+      return_uri = ::URI.parse(params[:return_url])
+      return 403 unless return_uri.host.end_with?('bergcloud.com')
+      error_uri = ::URI.parse(params[:error_url])
+      return 403 unless error_uri.host.end_with?('bergcloud.com')
+    
       user_id = UUID.generate
       consumer = Ahola::Twitter.consumer
       query = ::URI.encode_www_form(:id => user_id,
-                                  :return_url => params[:return_url],
-                                  :error_url => params[:error_url])
+                                    :return_url => params[:return_url],
+                                    :error_url => params[:error_url])
       callback_url = url('/authorised/') + "?" + query
       begin
         request_token = consumer.get_request_token(
