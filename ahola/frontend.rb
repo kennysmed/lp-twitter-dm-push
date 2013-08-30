@@ -3,6 +3,7 @@ require 'uuid'
 require 'uri'
 require 'sinatra/base'
 require 'ahola/config'
+require 'ahola/frontend_helpers'
 require 'ahola/store'
 require 'ahola/twitter'
 
@@ -11,6 +12,8 @@ module Ahola
     configure :production, :development do
       enable :logging
     end
+
+    helpers Ahola::FrontendHelpers
 
     set :sessions, true
     set :bind, '0.0.0.0'
@@ -21,10 +24,9 @@ module Ahola
     registrations = Ahola::Store::Registration.new
     twitter_data = Ahola::Store::TwitterData.new
     # events = Kachina::Store::Event.new
-
-
+    
     get '/' do
-      "Ahola"
+      format_title
     end
 
 
