@@ -17,6 +17,11 @@ processor.setup_registrations
 config = Ahola::Config.new
 
 EM.run do
+  server  = 'thin'
+  host    = '0.0.0.0'
+  port    = ENV['PORT'] || '5000'
+  web_app = Ahola::Frontend.new
+
   processor.start
   processor.poll_registrations
   processor.start_emitting_events
@@ -29,5 +34,16 @@ EM.run do
     end
   end
 
-  Ahola::Frontend.run!
+  dispatch = Rack::Builder.app do
+    map '/' do
+      run web_app
+    end
+  end
+
+  Rack::Server.start({
+    app:    dispatch,
+    server: server,
+    Host:   host,
+    Port:   port
+  })
 end
