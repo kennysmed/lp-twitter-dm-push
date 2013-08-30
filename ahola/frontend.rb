@@ -40,7 +40,7 @@ module Ahola
     get '/configure/' do
       user_id = UUID.generate
       consumer = Ahola::Twitter.consumer
-      query = URI.encode_www_form(:id => user_id,
+      query = ::URI.encode_www_form(:id => user_id,
                                   :return_url => params[:return_url],
                                   :error_url => params[:error_url])
       callback_url = url('/authorised/') + "?" + query
@@ -74,7 +74,7 @@ module Ahola
                              access_token.params['user_id'],
                              access_token.params['screen_name'])
           token_store.del(:request_token, user_id)
-          query = URI.encode_www_form("config[id]" => user_id)
+          query = ::URI.encode_www_form("config[id]" => user_id)
           # All good, send the user back to Remote.
           redirect params[:return_url] + "?" + query
         else
