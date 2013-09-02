@@ -9,7 +9,7 @@ module Ahola
 
     def [](key)
       key = "#{key}"
-      ENV[key.upcase] || self.config[key]
+      ENV[key.upcase]
     end
   end
 end
