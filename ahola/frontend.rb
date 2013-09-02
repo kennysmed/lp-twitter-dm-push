@@ -38,24 +38,20 @@ module Ahola
     # The user has come here from the Remote, to authenticate our publication's
     # use of their Twitter account.
     get '/configure/' do
-      return 400, 'No return_url parameter was provided' if !params[:return_url]
-      return 400, 'No error_url parameter was provided' if !params[:error_url]
-      return_uri = ::URI.parse(params[:return_url])
-      return 403 unless return_uri.host.end_with?('bergcloud.com')
-      error_uri = ::URI.parse(params[:error_url])
-      return 403 unless error_uri.host.end_with?('bergcloud.com')
+      return_url, error_url = check_berg_urls(
+                                          params[:return_url], params[:error_url])
     
       user_id = ::UUID.generate
       consumer = Ahola::Twitter.consumer
       query = ::URI.encode_www_form(:id => user_id,
-                                    :return_url => params[:return_url],
-                                    :error_url => params[:error_url])
+                                    :return_url => return_url,
+                                    :error_url => error_url)
       callback_url = url('/authorised/') + "?" + query
       begin
         request_token = consumer.get_request_token(
                                               :oauth_callback => callback_url)
       rescue ::OAuth::Unauthorized
-        redirect params[:error_url]
+        redirect error_url
       end
       token_store.store(:request_token, user_id, request_token)
       redirect request_token.authorize_url(:oauth_callback => callback_url)
@@ -64,6 +60,9 @@ module Ahola
 
     # Where the user is returned to after authenticating our app at Twitter.
     get '/authorised/' do
+      return_url, error_url = check_berg_urls(
+                                          params[:return_url], params[:error_url])
+
       if params[:denied]
         # TODO: We should return to Remote somehow...?
         return 500, "You chose not to authorise with Twitter. No problem, but we don't handle this very well at the moment, sorry."
@@ -83,12 +82,12 @@ module Ahola
           token_store.del(:request_token, user_id)
           query = ::URI.encode_www_form("config[id]" => user_id)
           # All good, send the user back to Remote.
-          redirect params[:return_url] + "?" + query
+          redirect return_url + "?" + query
         else
-          redirect params[:error_url]
+          redirect error_url
         end
       rescue OAuth::Unauthorized
-        redirect params[:error_url]
+        redirect error_url
       end
     end
 

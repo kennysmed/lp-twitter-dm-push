@@ -129,19 +129,19 @@ describe "Frontend" do
     end
 
     it "requires a return_url" do
-      get '/configure/?error_url=http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+      get "/configure/?error_url=#{@error_url}"
       last_response.status.should == 400
     end
     it "requires an error_url" do
-      get '/configure/?return_url=http://remote.bergcloud.com/publications/145/subscription_configuration_return'
+      get "/configure/?return_url=#{@return_url}"
       last_response.status.should == 400
     end
     it "requires a bergcloud.com return_url" do
-      get '/configure/?return_url=http://remote.berglondon.com/publications/145/subscription_configuration_return&error_url=http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+      get "/configure/?return_url=http://remote.berglondon.com/publications/145/subscription_configuration_return&error_url=#{@error_url}"
       last_response.status.should == 403
     end
     it "requires a bergcloud.com error_url" do
-      get '/configure/?return_url=http://remote.bergcloud.com/publications/145/subscription_configuration_return&error_url=http://remote.berglondon.com/publications/145/subscription_configuration_failure'
+      get "/configure/?return_url=#{@return_url}&error_url=http://remote.berglondon.com/publications/145/subscription_configuration_failure"
       last_response.status.should == 403
     end
   end
@@ -150,6 +150,31 @@ describe "Frontend" do
     describe "format_title" do
       it "returns the correct title" do
         format_title.should eq("Little Printer Twitter Direct Message Publication")
+      end
+    end
+
+    describe "check_berg_urls" do
+      before :all do
+        @return_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_return'
+        @error_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+      end
+
+      it "returns the urls if valid" do
+        checked_return_url, checked_error_url = check_berg_urls(@return_url, @error_url)
+        checked_return_url.should eq(@return_url)
+        checked_error_url.should eq(@error_url)
+      end
+
+      it "halts if return_url is invalid" do
+        expect {
+          check_berg_urls('http://example.com/test/', @error_url)
+        }.to raise_exception
+      end
+
+      it "halts if error_url is invalid" do
+        expect {
+          check_berg_urls(@return_url, 'http://example.com/test/')
+        }.to raise_exception
       end
     end
   end
