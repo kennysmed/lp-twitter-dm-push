@@ -49,12 +49,15 @@ describe "Frontend" do
   end
 
   describe "getting /configure/" do
+    before :all do
+      @return_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_return'
+      @error_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+      @configure_url = "/configure/?return_url=#{@return_url}&error_url=#{@error_url}"
+    end
 
     describe "successfully" do
       before :all do
-        @return_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_return'
-        @error_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
-        get "/configure/?return_url=#{@return_url}&error_url=#{@error_url}"
+        get @configure_url
         redirect_uri = ::URI.parse(last_response.headers['Location'])
         @redirect_query = ::CGI.parse(redirect_uri.query)
       end
@@ -104,6 +107,12 @@ describe "Frontend" do
 
     end
 
+    it "requires valid Twitter API credentials" do
+      Ahola::Twitter.stub(:consumer).and_return(OAuth::Consumer.new(
+                            'bad', 'creds', :site => 'https://api.twitter.com'))
+      get @configure_url
+      last_response.headers['Location'].should eq(@error_url) 
+    end
 
     it "requires a return_url" do
       get '/configure/?error_url=http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
