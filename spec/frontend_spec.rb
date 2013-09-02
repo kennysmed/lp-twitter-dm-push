@@ -109,9 +109,17 @@ describe "Frontend" do
       it "includes the correct error_url" do
         @callback_query['error_url'][0].should eq @error_url
       end
-
     end
 
+    it "stores the request token" do
+      user_id = '67633c90-f5fb-0130-307b-10ddb1a61923'
+      ::UUID.stub(:generate).and_return(user_id)
+      get @configure_url
+      
+      consumer = Ahola::Twitter.consumer
+      token_store = Ahola::Store::Token.new
+      token_store.get(:request_token, user_id, consumer).should be_an_instance_of(OAuth::RequestToken)
+    end
 
     it "requires valid Twitter API credentials" do
       Ahola::Twitter.stub(:consumer).and_return(OAuth::Consumer.new(
