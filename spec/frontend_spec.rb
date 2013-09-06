@@ -1,10 +1,17 @@
 require 'spec_helper'
 require 'timecop'
 require 'ahola/frontend'
+require 'uuid'
 
 describe "Frontend" do
   def app
     Ahola::Frontend
+  end
+
+  before :all do
+    @return_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_return'
+    @error_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
+    @user_id = 'be8b7db0-f936-0130-30c2-10ddb1a61923'
   end
 
   describe "getting /" do
@@ -50,14 +57,7 @@ describe "Frontend" do
 
   describe "getting /configure/" do
     before :all do
-      @return_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_return'
-      @error_url = 'http://remote.bergcloud.com/publications/145/subscription_configuration_failure'
-      @configure_url = "/configure/?return_url=#{@return_url}&error_url=#{@error_url}"
-    end
-
-    it "redirects" do
-      get @configure_url
-      last_response.status.should == 302
+      @configure_url = "/configure/?id=#{@user_id}&return_url=#{@return_url}&error_url=#{@error_url}"
     end
 
     it "redirects to the correct domain" do
@@ -112,13 +112,12 @@ describe "Frontend" do
     end
 
     it "stores the request token" do
-      user_id = '67633c90-f5fb-0130-307b-10ddb1a61923'
-      ::UUID.stub(:generate).and_return(user_id)
+      ::UUID.stub(:generate).and_return(@user_id)
       get @configure_url
       
       consumer = Ahola::Twitter.consumer
       token_store = Ahola::Store::Token.new
-      token_store.get(:request_token, user_id, consumer).should be_an_instance_of(OAuth::RequestToken)
+      token_store.get(:request_token, @user_id, consumer).should be_an_instance_of(OAuth::RequestToken)
     end
 
     it "requires valid Twitter API credentials" do
@@ -142,6 +141,63 @@ describe "Frontend" do
     end
     it "requires a bergcloud.com error_url" do
       get "/configure/?return_url=#{@return_url}&error_url=http://remote.berglondon.com/publications/145/subscription_configuration_failure"
+      last_response.status.should == 403
+    end
+  end
+
+  describe "getting /authorised/" do
+    before :all do
+      @oauth_token = 'XxKva554iTqVnUmtobGTLLcAZJ1F7SS55KdUnk1aQ'
+      @oauth_verifier = 'dfqlSsqPdkwdMwVoe0wPtFvLzSWcRg4PM2rkKFfM48'
+      @authorised_url = "/authorised/?return_url=%s&error_url=%s&id=%s&oauth_token=%s&oauth_verifier=%s" % [
+                @return_url, @error_url, @user_id, @oauth_token, @oauth_verifier]
+    end
+
+    it "redirects to the error_url if authentication was denied" do
+      get "#{@authorised_url}&denied=tgoKUl1sxRxWT0EvAtqAWf4oQ03fKcdHwLnNXm4PY"
+      last_response.headers['Location'].should eq(@error_url)
+    end
+
+    # TODO
+    # Can't work out how to do this.
+    # The access_token fetched in the Frontend method is, of course, always
+    # invalid.
+    #it "successfully redirects back to remote" do
+      #get @authorised_url
+      #last_response.headers['Location'].should eq(
+            #@return_url + '?' + ::URI.encode_www_form("config[id]" => @user_id))
+    #end
+
+    # TODO
+    # Can't work out how to do this either.
+    #it "deletes the request_token from the store" do
+      #consumer = Ahola::Twitter.consumer
+      #token_store = Ahola::Store::Token.new
+      #request_token = OAuth::RequestToken.new(consumer, 'mytoken', 'mysecret')
+      #token_store.store(:request_token, @user_id, request_token)
+
+      #stub_request(:post, "https://api.twitter.com/oauth/request_token").to_return(:body => "oauth_token=t&oauth_token_secret=s")
+      #stub_request(:post, "https://api.twitter.com/oauth/access_token").to_return(:body => "oauth_token=at&oauth_token_secret=as&screen_name=sn")
+
+      #get @authorised_url
+      #p "HERE"
+      #p token_store.get(:request_token, @user_id, consumer)
+    #end
+
+    it "requires a return_url" do
+      get "/authorised/?error_url=#{@error_url}"
+      last_response.status.should == 400
+    end
+    it "requires an error_url" do
+      get "/authorised/?return_url=#{@return_url}"
+      last_response.status.should == 400
+    end
+    it "requires a bergcloud.com return_url" do
+      get "/authorised/?return_url=http://remote.berglondon.com/publications/145/subscription_configuration_return&error_url=#{@error_url}"
+      last_response.status.should == 403
+    end
+    it "requires a bergcloud.com error_url" do
+      get "/authorised/?return_url=#{@return_url}&error_url=http://remote.berglondon.com/publications/145/subscription_configuration_failure"
       last_response.status.should == 403
     end
   end

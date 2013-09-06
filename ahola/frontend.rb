@@ -62,10 +62,8 @@ module Ahola
     get '/authorised/' do
       return_url, error_url = check_berg_urls(
                                           params[:return_url], params[:error_url])
-
       if params[:denied]
-        # TODO: We should return to Remote somehow...?
-        return 500, "You chose not to authorise with Twitter. No problem, but we don't handle this very well at the moment, sorry."
+        redirect error_url
       end
 
       user_id = params[:id]
