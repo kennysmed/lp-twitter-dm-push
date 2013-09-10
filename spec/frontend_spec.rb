@@ -44,7 +44,7 @@ describe "Frontend" do
       Timecop.return
     end
 
-    it "has a successful response" do
+    it "returns 200" do
       get "/sample/"
       last_response.status.should eq(200)
     end
