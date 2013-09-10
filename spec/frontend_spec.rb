@@ -202,6 +202,72 @@ describe "Frontend" do
     end
   end
 
+  describe "posting to /validate_config/" do
+    before :each do
+      @post_args = {
+        :subscription_id => 32,
+        :config => {:id => @user_id}.to_json,
+        :endpoint => "http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e",
+      }
+      # Store a fake access_token so that things work for @user_id:
+      token_store = Ahola::Store::Token.new
+      token_store.store(:access_token, @user_id, OAuth::RequestToken.new(Ahola::Twitter.consumer, 'test_token', 'test_secret'))
+    end
+
+    it "returns true with valid data" do
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_true
+    end
+
+    it "returns false with invalid subscription_id" do
+      @post_args[:subscription_id] = 'test'
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_false
+    end
+
+    it "returns false with no subscription_id" do
+      @post_args.delete(:subscription_id)
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_false
+    end
+
+    it "returns false with invalid endpoint" do
+      @post_args[:endpoint] = 'http://www.example.org/an/endpoint'
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_false
+    end
+
+    it "returns false with no endpoint" do
+      @post_args.delete(:endpoint)
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_false
+    end
+
+    it "returns false with invalid user_id" do
+      @post_args[:config] = {:id => 99}.to_json
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_false
+    end
+
+    it "returns false with no user_id" do
+      @post_args.delete(:config)
+      post "/validate_config/", @post_args
+      JSON.parse(last_response.body)['valid'].should be_false
+    end
+
+    it "stores a new subscription" do
+      post "/validate_config/", @post_args
+      subs = Ahola::Store::Subscription.new.get(@user_id)
+      subs[0].should eq(32)
+      subs[1].should eq("http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e")
+    end
+
+    it "adds a new registration" do
+      post "/validate_config/", @post_args
+      Ahola::Store::Registration.new.contains(@user_id).should be_true
+    end
+  end
+
 end
 
 

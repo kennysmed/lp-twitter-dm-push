@@ -109,6 +109,10 @@ module Ahola
         redis.srem('registrations', id)
       end
 
+      def contains(id)
+        redis.sismember('registrations', id)
+      end
+
       def fresh!
         redis.del('new')
       end

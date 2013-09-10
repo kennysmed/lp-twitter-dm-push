@@ -94,20 +94,36 @@ module Ahola
     # subscribes, with the subscription ID and the endpoint that we send
     # content to to be printed.
     post '/validate_config/' do
-      subscription_id = params[:subscription_id]
+      subscription_id = params[:subscription_id].to_i
       endpoint = params[:endpoint]
-      config = JSON.parse(params[:config])
-      user_id = config['id']
+      if params[:config]
+        config = JSON.parse(params[:config])
+        user_id = config['id']
+      end
       content_type :json
+      valid = true
+
+      if subscription_id == 0
+        valid = false
+      end
+      if endpoint.nil?
+        valid = false
+      elsif ! endpoint[/^https?\:\/\/api\.bergcloud\.com\//]
+        valid = false
+      end
+      if user_id.nil?
+        valid = false
+      end
 
       if access_token = token_store.get(
                                   :access_token, user_id, Ahola::Twitter.consumer)
         subscription_store.store(user_id, subscription_id, endpoint)
         registrations.add(user_id)
-        {:valid => true}.to_json
       else
-        {:valid => false}.to_json
+        valid = false
       end
+
+      {:valid => valid}.to_json
     end
 
 
