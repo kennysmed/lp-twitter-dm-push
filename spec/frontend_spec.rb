@@ -26,12 +26,14 @@ describe "Frontend" do
     end
   end
 
+
   describe "favicon" do
     it "returns 410" do
       get '/favicon.ico'
       last_response.status.should == 410
     end
   end
+
 
   describe "getting /sample/" do
     before :each do
@@ -42,8 +44,18 @@ describe "Frontend" do
       Timecop.return
     end
 
+    it "has a successful response" do
+      get "/sample/"
+      last_response.status.should eq(200)
+    end
+
     it "shows correct time" do
       last_response.body.should include(Time.now.strftime('<strong>%l:%M %p</strong>, %-d %B %Y'))
+    end
+
+    it "contains correct content" do
+      last_response.body.should include("From:</span>\n        <span class=\"person-name\">Phil Gyford")
+      last_response.body.should include("How long are you in town for?")
     end
 
     it "shows correct avatar" do
@@ -54,6 +66,7 @@ describe "Frontend" do
       last_response.headers['ETag'].should eq('"7b7d7d461d5afc0d4622b2a056fd87c7"')
     end
   end
+
 
   describe "getting /configure/" do
     before :all do
@@ -145,6 +158,7 @@ describe "Frontend" do
     end
   end
 
+
   describe "getting /authorised/" do
     before :all do
       @oauth_token = 'XxKva554iTqVnUmtobGTLLcAZJ1F7SS55KdUnk1aQ'
@@ -201,6 +215,7 @@ describe "Frontend" do
       last_response.status.should == 403
     end
   end
+
 
   describe "posting to /validate_config/" do
     before :each do
