@@ -1,3 +1,4 @@
+require 'ahola/config'
 require 'redis'
 require 'redis-namespace'
 
@@ -12,13 +13,29 @@ module Ahola
           redis = ::Redis.new(:host => uri.host, :port => uri.port,
                                                     :password => uri.password)
         else
-          redis = ::Redis.new
+          if ENV['RACK_ENV'] == 'test'
+            redis = ::Redis.new(:db => 2)
+          else
+            # Could use db 1 for development?
+            redis = ::Redis.new(:db => 0)
+          end
         end
         @redis = ::Redis::Namespace.new(:ahola, :redis => redis)
       end
 
       def config
         @config ||= Ahola::Config.new
+      end
+
+      # Empties everything from this database, so be careful!
+      def flushdb
+        @redis.flushdb
+      end
+
+      def log(str)
+        if ENV['RACK_ENV'] != 'test'
+          puts str
+        end
       end
     end
 
@@ -44,7 +61,7 @@ module Ahola
 
       # We keep a list of messages for each user, in case they get loads.
       def direct_message!(id, message)
-        puts "store direct message"
+        log "store direct message"
         # This is the data about a message that we store in the database:
         m = {
               :created_at => message.created_at,
@@ -70,7 +87,7 @@ module Ahola
       # Get any events (eg, direct messages) that have been stored.
       # And then delete them from the store.
       def get_and_reset_events!(id)
-        puts "get_and_reset_events #{id}"
+        log "get_and_reset_events #{id}"
         vals = redis.multi do
           redis.lrange(id, 0, -1)
           redis.del(id)
@@ -86,6 +103,10 @@ module Ahola
 
       def each(&blk)
         all.each(&blk)
+      end
+
+      def count(id)
+        redis.llen(id)
       end
     end
 

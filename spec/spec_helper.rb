@@ -10,3 +10,4 @@ RSpec.configure do |conf|
   conf.include Ahola::FrontendHelpers
 end
 
+
