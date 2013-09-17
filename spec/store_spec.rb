@@ -102,5 +102,66 @@ describe "Store" do
     end
   end
 
+  describe "Registration" do
+
+    before :each do
+      @registrations = Ahola::Store::Registration.new
+    end
+
+    it "adds to 'registrations' and 'new'" do
+      user_id = ::UUID.generate
+      @registrations.add(user_id)
+      @registrations.redis.sismember('registrations', user_id).should eq(true)
+      @registrations.redis.lpop('new').should eq(user_id)
+    end
+
+    it "can loop through IDs" do
+      user_ids = [::UUID.generate, ::UUID.generate]
+      @registrations.add(user_ids[0])
+      @registrations.add(user_ids[1])
+      @registrations.each do |reg|
+        user_ids.should include(reg)
+      end
+    end
+
+    it "returns all IDs" do
+      user_ids = [::UUID.generate, ::UUID.generate]
+      @registrations.add(user_ids[0])
+      @registrations.add(user_ids[1])
+      all = @registrations.all
+      all.length.should eq(2)
+      all.should include(user_ids[0])
+      all.should include(user_ids[1])
+    end
+
+    it "deletes an ID" do
+      user_id = ::UUID.generate
+      @registrations.add(user_id)
+      @registrations.all.length.should eq(1)
+      @registrations.del(user_id)
+      @registrations.all.length.should eq(0)
+    end
+
+    it "can tell when it contains a specific ID" do
+      user_id = ::UUID.generate
+      @registrations.add(user_id)
+      @registrations.contains(user_id).should eq(true)
+    end
+
+    it "can tell when it doesn't contain a specific ID" do
+      user_id_1 = ::UUID.generate
+      user_id_2 = ::UUID.generate
+      @registrations.add(user_id_1)
+      @registrations.contains(user_id_2).should eq(false)
+    end
+
+    it "can reset the 'new' list of IDs" do
+      user_id = ::UUID.generate
+      @registrations.add(user_id)
+      @registrations.fresh!
+      @registrations.redis.lpop('new').should eq(nil)
+    end
+  end
+
 
 end

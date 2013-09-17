@@ -144,11 +144,11 @@ module Ahola
     # Keyed by the uuid we've assigned to them.
     class Subscription < RedisBase
       def store(id, subscription_id, endpoint)
-        redis.hset(:subscription, id, Marshal.dump([subscription_id, endpoint]))
+        redis.hset(:subscriptions, id, Marshal.dump([subscription_id, endpoint]))
       end
 
       def get(id)
-        if data = redis.hget(:subscription, id)
+        if data = redis.hget(:subscriptions, id)
           Marshal.load(data)
         end
       end
