@@ -48,6 +48,7 @@ describe "Store" do
     # Start with an empty database for each test.
     redis = Ahola::Store::RedisBase.new
     redis.flushdb
+    @user_ids = [::UUID.generate, ::UUID.generate]
   end
 
   describe "Event" do
@@ -56,112 +57,119 @@ describe "Store" do
     end
 
     it "stores a direct message" do
-      user_id = ::UUID.generate
-      @events.direct_message!(user_id, @direct_messages[0])
-      @events.count(user_id).should eq(1)
+      @events.direct_message!(@user_ids[0], @direct_messages[0])
+      @events.count(@user_ids[0]).should eq(1)
     end
 
     it "retrieves and deletes direct messages" do
-      user_id = ::UUID.generate
-      @events.direct_message!(user_id, @direct_messages[0])
-      @events.direct_message!(user_id, @direct_messages[1])
-      messages = @events.get_and_reset_events!(user_id)
+      @events.direct_message!(@user_ids[0], @direct_messages[0])
+      @events.direct_message!(@user_ids[0], @direct_messages[1])
+      messages = @events.get_and_reset_events!(@user_ids[0])
       messages.length.should eq(2)
       messages[0][:sender][:name].should eq('Ms Sender')
       messages[1][:text].should eq("Another direct message is here")
-      @events.count(user_id).should eq(0)
+      @events.count(@user_ids[0]).should eq(0)
     end
 
     it "returns all the keys" do
-      user_ids = [::UUID.generate, ::UUID.generate, ]
-      @events.direct_message!(user_ids[0], @direct_messages[0])
-      @events.direct_message!(user_ids[1], @direct_messages[1])
-      user_ids = @events.all
-      user_ids.length.should eq(2)
-      user_ids.should include(user_ids[0])
-      user_ids.should include(user_ids[1])
+      @events.direct_message!(@user_ids[0], @direct_messages[0])
+      @events.direct_message!(@user_ids[1], @direct_messages[1])
+      ids = @events.all
+      ids.length.should eq(2)
+      ids.should include(@user_ids[0])
+      ids.should include(@user_ids[1])
     end
 
     it "returns all the events" do
-      user_ids = [::UUID.generate, ::UUID.generate, ]
-      @events.direct_message!(user_ids[0], @direct_messages[0])
-      @events.direct_message!(user_ids[1], @direct_messages[1])
+      @events.direct_message!(@user_ids[0], @direct_messages[0])
+      @events.direct_message!(@user_ids[1], @direct_messages[1])
       count = 0
       @events.each do |dm|
-        user_ids.should include(dm)
+        @user_ids.should include(dm)
         count += 1
       end
       count.should eq(2)
     end
 
     it "counts the events" do
-      user_id = ::UUID.generate
-      @events.direct_message!(user_id, @direct_messages[0])
-      @events.direct_message!(user_id, @direct_messages[1])
-      @events.count(user_id).should eq(2)
+      @events.direct_message!(@user_ids[0], @direct_messages[0])
+      @events.direct_message!(@user_ids[0], @direct_messages[1])
+      @events.count(@user_ids[0]).should eq(2)
     end
   end
 
   describe "Registration" do
-
     before :each do
       @registrations = Ahola::Store::Registration.new
     end
 
     it "adds to 'registrations' and 'new'" do
-      user_id = ::UUID.generate
-      @registrations.add(user_id)
-      @registrations.redis.sismember('registrations', user_id).should eq(true)
-      @registrations.redis.lpop('new').should eq(user_id)
+      @registrations.add(@user_ids[0])
+      @registrations.redis.sismember('registrations', @user_ids[0]).should eq(true)
+      @registrations.redis.lpop('new').should eq(@user_ids[0])
     end
 
     it "can loop through IDs" do
-      user_ids = [::UUID.generate, ::UUID.generate]
-      @registrations.add(user_ids[0])
-      @registrations.add(user_ids[1])
+      @registrations.add(@user_ids[0])
+      @registrations.add(@user_ids[1])
       @registrations.each do |reg|
-        user_ids.should include(reg)
+        @user_ids.should include(reg)
       end
     end
 
     it "returns all IDs" do
-      user_ids = [::UUID.generate, ::UUID.generate]
-      @registrations.add(user_ids[0])
-      @registrations.add(user_ids[1])
+      @registrations.add(@user_ids[0])
+      @registrations.add(@user_ids[1])
       all = @registrations.all
       all.length.should eq(2)
-      all.should include(user_ids[0])
-      all.should include(user_ids[1])
+      all.should include(@user_ids[0])
+      all.should include(@user_ids[1])
     end
 
     it "deletes an ID" do
-      user_id = ::UUID.generate
-      @registrations.add(user_id)
+      @registrations.add(@user_ids[0])
       @registrations.all.length.should eq(1)
-      @registrations.del(user_id)
+      @registrations.del(@user_ids[0])
       @registrations.all.length.should eq(0)
     end
 
     it "can tell when it contains a specific ID" do
-      user_id = ::UUID.generate
-      @registrations.add(user_id)
-      @registrations.contains(user_id).should eq(true)
+      @registrations.add(@user_ids[0])
+      @registrations.contains(@user_ids[0]).should eq(true)
     end
 
     it "can tell when it doesn't contain a specific ID" do
-      user_id_1 = ::UUID.generate
-      user_id_2 = ::UUID.generate
-      @registrations.add(user_id_1)
-      @registrations.contains(user_id_2).should eq(false)
+      @registrations.add(@user_ids[0])
+      @registrations.contains(@user_ids[1]).should eq(false)
     end
 
     it "can reset the 'new' list of IDs" do
-      user_id = ::UUID.generate
-      @registrations.add(user_id)
+      @registrations.add(@user_ids[0])
       @registrations.fresh!
       @registrations.redis.lpop('new').should eq(nil)
     end
   end
 
+  describe "Subscription" do
+    before :each do
+      @subscriptions = Ahola::Store::Subscription.new
+      @subscription_id = '2ca7287d935ae2a6a562a3a17bdddcbe81e79d43'
+      @endpoint = "http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e79d43/publish"
+    end
+
+    it "can store subscription data" do
+      @subscriptions.store(@user_ids[0], @subscription_id, @endpoint)
+      subs_data = Marshal.load(@subscriptions.redis.hget(:subscriptions, @user_ids[0]))
+      subs_data[0].should eq(@subscription_id)
+      subs_data[1].should eq(@endpoint)
+    end
+
+    it "can get subscription data" do
+      @subscriptions.store(@user_ids[0], @subscription_id, @endpoint)
+      subs_data = @subscriptions.get(@user_ids[0])
+      subs_data[0].should eq(@subscription_id)
+      subs_data[1].should eq(@endpoint)
+    end
+  end
 
 end
