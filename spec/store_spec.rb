@@ -73,14 +73,13 @@ describe "Store" do
     end
 
     it "returns all the keys" do
-      user_id_1 = ::UUID.generate
-      @events.direct_message!(user_id_1, @direct_messages[0])
-      user_id_2 = ::UUID.generate
-      @events.direct_message!(user_id_2, @direct_messages[1])
+      user_ids = [::UUID.generate, ::UUID.generate, ]
+      @events.direct_message!(user_ids[0], @direct_messages[0])
+      @events.direct_message!(user_ids[1], @direct_messages[1])
       user_ids = @events.all
       user_ids.length.should eq(2)
-      user_ids.should include(user_id_1)
-      user_ids.should include(user_id_2)
+      user_ids.should include(user_ids[0])
+      user_ids.should include(user_ids[1])
     end
 
     it "returns all the events" do
@@ -93,6 +92,13 @@ describe "Store" do
         count += 1
       end
       count.should eq(2)
+    end
+
+    it "counts the events" do
+      user_id = ::UUID.generate
+      @events.direct_message!(user_id, @direct_messages[0])
+      @events.direct_message!(user_id, @direct_messages[1])
+      @events.count(user_id).should eq(2)
     end
   end
 
