@@ -4,7 +4,12 @@ module Ahola
   class Config
 
     def config
-      @config ||= YAML.load_file('config.yml') if File.exists?('config.yml')
+      if ENV['RACK_ENV'] == 'test'
+        file_name = 'config.yml.test'
+      else
+        file_name = 'config.yml'
+      end
+      @config ||= YAML.load_file(file_name) if File.exists?(file_name)
     end
 
     def [](key)

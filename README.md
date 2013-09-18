@@ -14,8 +14,12 @@ In progress. Start with:
 
 When running tests, `ENV['RACK_ENV']` is set to `test` and, if there's no `rediscloud_url` set, uses Redis database `2` (`0` is the default otherwise).  **Database `2` will be emptied at various points in the tests**, so don't use it for anything persistent!
 
+Also, config data is read from `config.yml.test` rather than anything in
+`config.yml` or environment variables.
+
 
 ## Environment variables
+
 
     # Number of seconds.
     KEEPALIVE_TIME 
