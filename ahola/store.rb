@@ -160,7 +160,6 @@ module Ahola
     # has finished the auth process.
     # Keyed by the uuid we've assigned to each user.
     class Token < RedisBase
-
       def store(ns, id, token)
         redis.hset(ns, id, Marshal.dump([token.token, token.secret]))
       end

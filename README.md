@@ -4,6 +4,12 @@ In progress. Start with:
 
 	$ forman start
 
+## TODO
+
+* Merge TwitterData and Subscription store into Subscription. Change Marshalled
+  array to a hash.
+
+
 ## NOTE when running tests
 
 When running tests, `ENV['RACK_ENV']` is set to `test` and, if there's no `rediscloud_url` set, uses Redis database `2` (`0` is the default otherwise).  **Database `2` will be emptied at various points in the tests**, so don't use it for anything persistent!
