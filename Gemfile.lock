@@ -6,6 +6,8 @@ GEM
       multi_json (~> 1.0)
     addressable (2.3.4)
     cookiejar (0.3.0)
+    crack (0.4.1)
+      safe_yaml (~> 0.9.0)
     daemons (1.1.8)
     em-hiredis (0.2.1)
       hiredis (~> 0.4.0)
@@ -15,6 +17,8 @@ GEM
       em-socksify
       eventmachine (>= 1.0.0.beta.4)
       http_parser.rb (>= 0.5.3)
+    em-rspec (0.1.1)
+      eventmachine (>= 0.12.10)
     em-socksify (0.2.1)
       eventmachine (>= 1.0.0.beta.4)
     em-twitter (0.2.2)
@@ -38,6 +42,7 @@ GEM
     redis (3.0.4)
     redis-namespace (1.3.0)
       redis (~> 3.0.0)
+    safe_yaml (0.9.5)
     simple_oauth (0.2.0)
     sinatra (1.4.2)
       rack (~> 1.5, >= 1.5.2)
@@ -61,6 +66,9 @@ GEM
       simple_oauth (~> 0.2)
     uuid (2.3.7)
       macaddr (~> 1.0)
+    webmock (1.13.0)
+      addressable (>= 2.2.7)
+      crack (>= 0.3.2)
     yajl-ruby (1.1.0)
 
 PLATFORMS
@@ -70,6 +78,7 @@ DEPENDENCIES
   activesupport
   em-hiredis
   em-http-request
+  em-rspec
   oauth
   redis
   redis-namespace
@@ -77,3 +86,4 @@ DEPENDENCIES
   thin
   tweetstream
   uuid
+  webmock

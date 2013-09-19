@@ -65,7 +65,7 @@ describe "Store" do
     it "retrieves and deletes direct messages" do
       @event_store.direct_message!(@user_ids[0], @direct_messages[0])
       @event_store.direct_message!(@user_ids[0], @direct_messages[1])
-      messages = @event_store.get_and_reset_events!(@user_ids[0])
+      messages = @event_store.get_and_reset_messages!(@user_ids[0])
       messages.length.should eq(2)
       messages[0][:sender][:name].should eq('Ms Sender')
       messages[1][:text].should eq("Another direct message is here")

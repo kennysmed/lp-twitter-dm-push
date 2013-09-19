@@ -40,24 +40,12 @@ module Ahola
     end
 
 
-    # Keeps track of how many mentions, retweets, etc there are for a user.
+    # Keeps track of direct messages for a user.
     class Event < RedisBase
       def initialize
         super
         @redis = Redis::Namespace.new(:events, :redis => @redis)
       end
-
-      # def mention!(id, count=1)
-      #   redis.hincrby(id, :mentions, count)
-      # end
-
-      # def retweet!(id, count=1)
-      #   redis.hincrby(id, :retweets, count)
-      # end
-
-      # def new_follower!(id, count=1)
-      #   redis.hincrby(id, :new_followers, count)
-      # end
 
       # We keep a list of messages for each user, in case they get loads.
       def direct_message!(id, message)
@@ -80,14 +68,10 @@ module Ahola
         redis.rpush(id, Marshal.dump(m))
       end
 
-      # def event!(id, key, count=1)
-      #   redis.hincrby(id, :"#{key}s", count)
-      # end
-
       # Get any events (eg, direct messages) that have been stored.
       # And then delete them from the store.
-      def get_and_reset_events!(id)
-        log "get_and_reset_events #{id}"
+      def get_and_reset_messages!(id)
+        log "get_and_reset_messages#{id}"
         vals = redis.multi do
           redis.lrange(id, 0, -1)
           redis.del(id)

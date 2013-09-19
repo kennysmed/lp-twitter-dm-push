@@ -5,13 +5,12 @@ require 'em-http/middleware/oauth'
 require 'erb'
 
 class Ahola::BergCloud
-  attr_accessor :subscription_store, :registrations, :events
+  attr_accessor :subscription_store, :registration_store, :event_store
 
   def initialize
     @subscription_store = Ahola::Store::Subscription.new
-    @registrations = Ahola::Store::Registration.new
-    @events = Ahola::Store::Event.new
-    # @counts = Hash.new {|h, k| h[k] = Hash.new(0) }
+    @registration_store = Ahola::Store::Registration.new
+    @event_store = Ahola::Store::Event.new
   end
 
   def config
@@ -30,64 +29,57 @@ class Ahola::BergCloud
     conn
   end
 
-  # User received a direct message.
-  def direct_message(id, message)
-    events.direct_message!(id, message)
+  def post_request(url, body)
+    request(url).post(
+      :head => { 'Content-Type' => 'text/html; charset=utf-8' },
+      :body => body
+    )
   end
 
-  # def mention(id)
-  #   events.mention!(id)
-  # end
+  def message_template
+    # We'll use the messages variable in the template.
+    # Each message has data which is defined and stored in
+    # Event.direct_message().
+    ERB.new(File.open('views/publication.erb', 'r').read)
+  end
 
-  # def retweet(id)
-  #   events.retweet!(id)
-  # end
-
-  # def new_follower(id)
-  #   events.new_follower!(id)
-  # end
-
-  # def flourish!(id)
-  #   do_ahola_behaviour(id, 'flourish' => 1)
-  # end
-
+  # User received a direct message.
+  def direct_message(id, message)
+    event_store.direct_message!(id, message)
+  end
 
   # Check for new messages every so often.
   def start_emitting
     puts "starting to emit bergcloud messages every 10s"
     EventMachine.add_periodic_timer(10) do
-      events.each do |id|
-        messages = events.get_and_reset_events!(id)
-        do_ahola_behaviour(id, messages)
+      event_store.each do |id|
+        messages = event_store.get_and_reset_messages!(id)
+        print_message(id, messages)
       end
     end
   end
 
-
-  # Output messages to the printer.
-  def do_ahola_behaviour(id, messages)
+  def print_message(id, messages)
     subscription_id, endpoint = subscription_store.get(id)
 
-    # We'll use the messages variable in the template.
-    # Each message has data which is defined and stored in
-    # Event.direct_message().
-    template = ERB.new(File.open('views/publication.erb', 'r').read)
+    template = message_template
 
-    http = request(endpoint).post(
-      :head => { 'Content-Type' => 'text/html; charset=utf-8' },
-      :body => template.result(binding)
-    )
+    begin
+      http = post_request(endpoint, template.result(binding))
 
-    http.callback do
-      puts "#{http.response_header.status} response for #{subscription_id}"
-      if http.response_header.status == 410
-        # This user has unsubscribed, so we must remove their registration.
-        puts "deleting registration"
-        registrations.del(id) 
+      http.callback do
+        puts "#{http.response_header.status} response for #{subscription_id}"
+        if http.response_header.status == 410
+          # This user has unsubscribed, so we must remove their registration.
+          puts "deleting registration"
+          registration_store.del(id) 
+        end
       end
-    end
-    http.errback do
-      puts "#{http.response_header.status} failed response for #{subscription_id}"
+      http.errback do
+        puts "#{http.response_header.status} failed response for #{subscription_id}"
+      end
+    rescue => e
+      p "ERROR: #{e}"
     end
   end
 end
