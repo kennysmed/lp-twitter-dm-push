@@ -17,14 +17,13 @@ module Ahola
     end
 
     def self.tweetstream(token, secret)
-      TweetStream.configure do |config|
-        config.consumer_key = consumer.key
-        config.consumer_secret = consumer.secret
-        config.oauth_token = token
-        config.oauth_token_secret = secret
-        config.auth_method = :oauth
-      end
-      TweetStream::Client.new
+      ::TweetStream::Client.new(
+        :consumer_key => consumer.key,
+        :consumer_secret => consumer.secret,
+        :oauth_token => token,
+        :oauth_token_secret => secret,
+        :auth_method => :oauth
+      )
     end
   end
 end
