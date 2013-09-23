@@ -9,6 +9,8 @@ gem 'oauth'
 gem 'rack-test'
 gem 'redis'
 gem 'redis-namespace'
+# Needed for em-http-request/lib/em-http/middleware/oauth.rb
+gem 'simple_oauth'
 gem 'sinatra'
 gem 'thin'
 gem 'tweetstream'

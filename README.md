@@ -20,8 +20,7 @@ Also, config data is read from `config.yml.test` rather than anything in
 
 ## Environment variables
 
-
-    # Number of seconds.
+    # Number of seconds (optional, defaults to 1200).
     KEEPALIVE_TIME 
 
     # URL to ping to keep things running, and link to images in CSS.
