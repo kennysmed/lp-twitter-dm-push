@@ -23,7 +23,6 @@ module Ahola
     subscription_store = Ahola::Store::Subscription.new
     registrations = Ahola::Store::Registration.new
     twitter_data = Ahola::Store::TwitterData.new
-    # events = Kachina::Store::Event.new
     
     get '/' do
       format_title
