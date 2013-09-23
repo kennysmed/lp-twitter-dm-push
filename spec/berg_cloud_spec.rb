@@ -20,15 +20,15 @@ describe "BERG Cloud" do
   end
 
   it "has a subscription_store" do
-    @berg_cloud.subscription_store.should be_an_instance_of(Ahola::Store::Subscription)
+    expect(@berg_cloud.subscription_store).to be_an_instance_of(Ahola::Store::Subscription)
   end
 
   it "has a registration_store" do
-    @berg_cloud.registration_store.should be_an_instance_of(Ahola::Store::Registration)
+    expect(@berg_cloud.registration_store).to be_an_instance_of(Ahola::Store::Registration)
   end
 
   it "has an event_store" do
-    @berg_cloud.event_store.should be_an_instance_of(Ahola::Store::Event)
+    expect(@berg_cloud.event_store).to be_an_instance_of(Ahola::Store::Event)
   end
 
   describe "request" do
@@ -37,12 +37,12 @@ describe "BERG Cloud" do
     end
 
     it "requests a URL" do
-      @http.should be_an_instance_of(EventMachine::HttpConnection)
-      @http.uri.should eq(@endpoint)
+      expect(@http).to be_an_instance_of(EventMachine::HttpConnection)
+      expect(@http.uri).to eq(@endpoint)
     end
 
     it "requests a URL with OAuth" do
-      @http.middleware[0].should be_an_instance_of(EventMachine::Middleware::OAuth)
+      expect(@http.middleware[0]).to be_an_instance_of(EventMachine::Middleware::OAuth)
     end
   end
 
@@ -52,29 +52,29 @@ describe "BERG Cloud" do
     end
 
     it "sends a POST request" do
-      @http.req.host.should eq(@endpoint_domain)
-      @http.req.uri.path.should eq(@endpoint_path)
-      @http.req.method.should eq('POST')
+      expect(@http.req.host).to eq(@endpoint_domain)
+      expect(@http.req.uri.path).to eq(@endpoint_path)
+      expect(@http.req.method).to eq('POST')
     end
 
     it "sends a POST request with the correct OAuth credentials" do
       @http = @berg_cloud.post_request(@endpoint, "<p>My content</p>")
       options = @http.req.headers['Authorization'].options
-      options[:consumer_key].should eq('abcdefghABCDEFGH12345')
-      options[:consumer_secret].should eq('1234567890abcdefghijklmnopqrstuvwxyzABCDEF')
-      options[:token].should eq('ABCDEFGHIJKLMNOPQRST')
-      options[:token_secret].should eq('0987654321zyxwvutsrqponmlkjihgfedcbaZYXW')
+      expect(options[:consumer_key]).to eq('abcdefghABCDEFGH12345')
+      expect(options[:consumer_secret]).to eq('1234567890abcdefghijklmnopqrstuvwxyzABCDEF')
+      expect(options[:token]).to eq('ABCDEFGHIJKLMNOPQRST')
+      expect(options[:token_secret]).to eq('0987654321zyxwvutsrqponmlkjihgfedcbaZYXW')
     end
 
     it "sends the correct body in a POST request" do
       @http = @berg_cloud.post_request(@endpoint, "<p>My content</p>")
-      @http.req.body.should eq("<p>My content</p>")
+      expect(@http.req.body).to eq("<p>My content</p>")
     end
   end
 
   describe "message_template" do
     it "uses the correct message template" do
-      @berg_cloud.message_template.src.should include("<!-- Publication Template -->")
+      expect(@berg_cloud.message_template.src).to include("<!-- Publication Template -->")
     end
   end
 
@@ -86,7 +86,7 @@ describe "BERG Cloud" do
     it "sends a message to event store" do
       user_id = ::UUID.generate
       Ahola::Store::Event.stub(:direct_message!).with(user_id, @direct_message).and_return(1)
-      @berg_cloud.direct_message(user_id, @direct_message).should eq(1)
+      expect(@berg_cloud.direct_message(user_id, @direct_message)).to eq(1)
     end
   end
 
@@ -135,12 +135,12 @@ describe "BERG Cloud" do
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
-    it "should use the message template" do
+    it "uses the message template" do
       @berg_cloud.should_receive('message_template')
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
-    it "should send a post request" do
+    it "sends a post request" do
       @response_header.stub(:status).and_return(200)
 
       @http.stub(:callback).and_yield()

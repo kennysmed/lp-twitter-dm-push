@@ -9,11 +9,11 @@ describe "Config" do
   end
 
   it "returns config settings" do
-    @config[:bergcloud_consumer_key].should eq('abcdefghABCDEFGH12345')
+    expect(@config[:bergcloud_consumer_key]).to eq('abcdefghABCDEFGH12345')
   end
 
   it "returns nothing for wrong config settings" do
-    @config[:nothing_here].should eq(nil)
+    expect(@config[:nothing_here]).to eq(nil)
   end
 
   it "returns ENV variables when necessary" do
@@ -22,6 +22,6 @@ describe "Config" do
     ENV.stub(:[]).with('TEST_ENV_KEY').and_return('testENVvalue')
     ENV.stub(:[]).with('RACK_ENV').and_return('test')
 
-    @config[:test_env_key].should eq('testENVvalue')
+    expect(@config[:test_env_key]).to eq('testENVvalue')
   end
 end

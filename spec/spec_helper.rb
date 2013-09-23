@@ -6,10 +6,15 @@ require 'rspec'
 require 'rack/test'
 require 'twitter'
 
-RSpec.configure do |conf|
-  conf.color_enabled = true
- 	conf.include Rack::Test::Methods
-  conf.include Ahola::FrontendHelpers
+RSpec.configure do |config|
+  config.color_enabled = true
+ 	config.include Rack::Test::Methods
+  config.include Ahola::FrontendHelpers
+
+  # Force it to only accept the Rspec 2 Expect syntax.
+  config.expect_with :rspec do |c|
+    c.syntax = :expect
+  end
 
   # Example data.
   def direct_messages

@@ -25,26 +25,26 @@ describe "Store" do
 
     it "stores a direct message" do
       @event_store.direct_message!(@user_ids[0], @direct_messages[0])
-      @event_store.count(@user_ids[0]).should eq(1)
+      expect(@event_store.count(@user_ids[0])).to eq(1)
     end
 
     it "retrieves and deletes direct messages" do
       @event_store.direct_message!(@user_ids[0], @direct_messages[0])
       @event_store.direct_message!(@user_ids[0], @direct_messages[1])
       messages = @event_store.get_and_reset_messages!(@user_ids[0])
-      messages.length.should eq(2)
-      messages[0][:sender][:name].should eq('Ms Sender')
-      messages[1][:text].should eq("Another direct message is here")
-      @event_store.count(@user_ids[0]).should eq(0)
+      expect(messages.length).to eq(2)
+      expect(messages[0][:sender][:name]).to eq('Ms Sender')
+      expect(messages[1][:text]).to eq("Another direct message is here")
+      expect(@event_store.count(@user_ids[0])).to eq(0)
     end
 
     it "returns all the keys" do
       @event_store.direct_message!(@user_ids[0], @direct_messages[0])
       @event_store.direct_message!(@user_ids[1], @direct_messages[1])
       ids = @event_store.all
-      ids.length.should eq(2)
-      ids.should include(@user_ids[0])
-      ids.should include(@user_ids[1])
+      expect(ids.length).to eq(2)
+      expect(ids).to include(@user_ids[0])
+      expect(ids).to include(@user_ids[1])
     end
 
     it "returns all the events" do
@@ -52,16 +52,16 @@ describe "Store" do
       @event_store.direct_message!(@user_ids[1], @direct_messages[1])
       count = 0
       @event_store.each do |dm|
-        @user_ids.should include(dm)
+        expect(@user_ids).to include(dm)
         count += 1
       end
-      count.should eq(2)
+      expect(count).to eq(2)
     end
 
     it "counts the events" do
       @event_store.direct_message!(@user_ids[0], @direct_messages[0])
       @event_store.direct_message!(@user_ids[0], @direct_messages[1])
-      @event_store.count(@user_ids[0]).should eq(2)
+      expect(@event_store.count(@user_ids[0])).to eq(2)
     end
   end
 
@@ -72,15 +72,15 @@ describe "Store" do
 
     it "adds to 'registrations' and 'new'" do
       @registration_store.add(@user_ids[0])
-      @registration_store.redis.sismember('registrations', @user_ids[0]).should eq(true)
-      @registration_store.redis.lpop('new').should eq(@user_ids[0])
+      expect(@registration_store.redis.sismember('registrations', @user_ids[0])).to eq(true)
+      expect(@registration_store.redis.lpop('new')).to eq(@user_ids[0])
     end
 
     it "loops through IDs" do
       @registration_store.add(@user_ids[0])
       @registration_store.add(@user_ids[1])
       @registration_store.each do |reg|
-        @user_ids.should include(reg)
+        expect(@user_ids).to include(reg)
       end
     end
 
@@ -88,32 +88,32 @@ describe "Store" do
       @registration_store.add(@user_ids[0])
       @registration_store.add(@user_ids[1])
       all = @registration_store.all
-      all.length.should eq(2)
-      all.should include(@user_ids[0])
-      all.should include(@user_ids[1])
+      expect(all.length).to eq(2)
+      expect(all).to include(@user_ids[0])
+      expect(all).to include(@user_ids[1])
     end
 
     it "deletes an ID" do
       @registration_store.add(@user_ids[0])
-      @registration_store.all.length.should eq(1)
+      expect(@registration_store.all.length).to eq(1)
       @registration_store.del(@user_ids[0])
-      @registration_store.all.length.should eq(0)
+      expect(@registration_store.all.length).to eq(0)
     end
 
     it "can tell when it contains a specific ID" do
       @registration_store.add(@user_ids[0])
-      @registration_store.contains(@user_ids[0]).should eq(true)
+      expect(@registration_store.contains(@user_ids[0])).to eq(true)
     end
 
     it "can tell when it doesn't contain a specific ID" do
       @registration_store.add(@user_ids[0])
-      @registration_store.contains(@user_ids[1]).should eq(false)
+      expect(@registration_store.contains(@user_ids[1])).to eq(false)
     end
 
     it "resets the 'new' list of IDs" do
       @registration_store.add(@user_ids[0])
       @registration_store.fresh!
-      @registration_store.redis.lpop('new').should eq(nil)
+      expect(@registration_store.redis.lpop('new')).to eq(nil)
     end
   end
 
@@ -127,15 +127,15 @@ describe "Store" do
     it "stores subscription data" do
       @subscription_store.store(@user_ids[0], @subscription_id, @endpoint)
       subs_data = Marshal.load(@subscription_store.redis.hget(:subscriptions, @user_ids[0]))
-      subs_data[0].should eq(@subscription_id)
-      subs_data[1].should eq(@endpoint)
+      expect(subs_data[0]).to eq(@subscription_id)
+      expect(subs_data[1]).to eq(@endpoint)
     end
 
     it "gets subscription data" do
       @subscription_store.store(@user_ids[0], @subscription_id, @endpoint)
       subs_data = @subscription_store.get(@user_ids[0])
-      subs_data[0].should eq(@subscription_id)
-      subs_data[1].should eq(@endpoint)
+      expect(subs_data[0]).to eq(@subscription_id)
+      expect(subs_data[1]).to eq(@endpoint)
     end
   end
 
@@ -162,27 +162,27 @@ describe "Store" do
       it "stores details" do
         token_data = Marshal.load(
                            @token_store.redis.hget(:request_token, @user_ids[0]))
-        token_data[0].should eq(@oauth_token)
-        token_data[1].should eq(@oauth_token_secret)
+        expect(token_data[0]).to eq(@oauth_token)
+        expect(token_data[1]).to eq(@oauth_token_secret)
       end
 
       it "deletes details" do
         @token_store.del(:request_token, @user_ids[0])
         token_data = @token_store.redis.hget(:request_token, @user_ids[0])
-        token_data.should eq(nil)
+        expect(token_data).to eq(nil)
       end
 
       it "gets credentials" do
         token_data = @token_store.get_credentials(:request_token, @user_ids[0])
-        token_data[0].should eq(@oauth_token)
-        token_data[1].should eq(@oauth_token_secret)
+        expect(token_data[0]).to eq(@oauth_token)
+        expect(token_data[1]).to eq(@oauth_token_secret)
       end
 
       it "gets a token object" do
         token = @token_store.get(:request_token, @user_ids[0], Ahola::Twitter.consumer)
-        token.should be_an_instance_of(OAuth::RequestToken)
-        token.token.should eq(@oauth_token)
-        token.secret.should eq(@oauth_token_secret)
+        expect(token).to be_an_instance_of(OAuth::RequestToken)
+        expect(token.token).to eq(@oauth_token)
+        expect(token.secret).to eq(@oauth_token_secret)
       end
     end
 
@@ -200,8 +200,8 @@ describe "Store" do
       it "stores details" do
         token_data = Marshal.load(
                            @token_store.redis.hget(:access_token, @user_ids[0]))
-        token_data[0].should eq(@oauth_token)
-        token_data[1].should eq(@oauth_token_secret)
+        expect(token_data[0]).to eq(@oauth_token)
+        expect(token_data[1]).to eq(@oauth_token_secret)
       end
 
       it "deletes details" do
@@ -209,20 +209,20 @@ describe "Store" do
                            AccessToken.new(@oauth_token, @oauth_token_secret))
         @token_store.del(:access_token, @user_ids[0])
         token_data = @token_store.redis.hget(:access_token, @user_ids[0])
-        token_data.should eq(nil)
+        expect(token_data).to eq(nil)
       end
 
       it "gets credentials" do
         token_data = @token_store.get_credentials(:access_token, @user_ids[0])
-        token_data[0].should eq(@oauth_token)
-        token_data[1].should eq(@oauth_token_secret)
+        expect(token_data[0]).to eq(@oauth_token)
+        expect(token_data[1]).to eq(@oauth_token_secret)
       end
 
       it "gets a token object" do
         token = @token_store.get(:access_token, @user_ids[0], Ahola::Twitter.consumer)
-        token.should be_an_instance_of(OAuth::AccessToken)
-        token.token.should eq(@oauth_token)
-        token.secret.should eq(@oauth_token_secret)
+        expect(token).to be_an_instance_of(OAuth::AccessToken)
+        expect(token.token).to eq(@oauth_token)
+        expect(token.secret).to eq(@oauth_token_secret)
       end
     end
   end

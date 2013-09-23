@@ -15,7 +15,7 @@ describe "Helpers" do
 
   describe "format_title" do
     it "returns the correct title" do
-      helpers.format_title.should eq("Little Printer Twitter Direct Message Publication")
+      expect(helpers.format_title).to eq("Little Printer Twitter Direct Message Publication")
     end
   end
 
@@ -27,8 +27,8 @@ describe "Helpers" do
 
     it "returns the urls if valid" do
       checked_return_url, checked_error_url = helpers.check_berg_urls(@return_url, @error_url)
-      checked_return_url.should eq(@return_url)
-      checked_error_url.should eq(@error_url)
+      expect(checked_return_url).to eq(@return_url)
+      expect(checked_error_url).to eq(@error_url)
     end
 
     it "halts if return_url is invalid" do
