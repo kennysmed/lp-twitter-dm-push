@@ -7,6 +7,7 @@ require 'rack/test'
 require 'twitter'
 
 RSpec.configure do |conf|
+  conf.color_enabled = true
  	conf.include Rack::Test::Methods
   conf.include Ahola::FrontendHelpers
 
