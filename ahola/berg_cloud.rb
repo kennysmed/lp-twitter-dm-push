@@ -5,12 +5,16 @@ require 'em-http/middleware/oauth'
 require 'erb'
 
 class Ahola::BergCloud
-  attr_accessor :subscription_store, :registration_store, :event_store
+  attr_accessor :subscription_store, :registration_store, :event_store, :emitting_timer_seconds
 
   def initialize
     @subscription_store = Ahola::Store::Subscription.new
     @registration_store = Ahola::Store::Registration.new
     @event_store = Ahola::Store::Event.new
+
+    # How frequently we do the emitting of direct messages.
+    # It's here mainly so we can set it to a small amount when testing.
+    @emitting_timer_seconds = 10
   end
 
   def config
@@ -56,8 +60,8 @@ class Ahola::BergCloud
 
   # Check for new messages every so often.
   def start_emitting
-    log("starting to emit bergcloud messages every 10s")
-    EventMachine.add_periodic_timer(10) do
+    log("Starting to emit bergcloud messages every #{emitting_timer_seconds}s")
+    EventMachine.add_periodic_timer(emitting_timer_seconds) do
       event_store.each do |id|
         messages = event_store.get_and_reset_messages!(id)
         print_message(id, messages)
@@ -77,7 +81,7 @@ class Ahola::BergCloud
         log("#{http.response_header.status} response for #{subscription_id}")
         if http.response_header.status == 410
           # This user has unsubscribed, so we must remove their registration.
-          log("deleting registration")
+          log("Deleting registration")
           registration_store.del(id) 
         end
       end
