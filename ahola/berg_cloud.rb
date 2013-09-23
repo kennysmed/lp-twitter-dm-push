@@ -17,6 +17,12 @@ class Ahola::BergCloud
     @config ||= Ahola::Config.new
   end
 
+  def log(str)
+    if ENV['RACK_ENV'] != 'test'
+      puts str
+    end
+  end
+
   def request(url)
     credentials = {
       :consumer_key => config[:bergcloud_consumer_key],
@@ -50,7 +56,7 @@ class Ahola::BergCloud
 
   # Check for new messages every so often.
   def start_emitting
-    puts "starting to emit bergcloud messages every 10s"
+    log("starting to emit bergcloud messages every 10s")
     EventMachine.add_periodic_timer(10) do
       event_store.each do |id|
         messages = event_store.get_and_reset_messages!(id)
@@ -68,18 +74,18 @@ class Ahola::BergCloud
       http = post_request(endpoint, template.result(binding))
 
       http.callback do
-        puts "#{http.response_header.status} response for #{subscription_id}"
+        log("#{http.response_header.status} response for #{subscription_id}")
         if http.response_header.status == 410
           # This user has unsubscribed, so we must remove their registration.
-          puts "deleting registration"
+          log("deleting registration")
           registration_store.del(id) 
         end
       end
       http.errback do
-        puts "#{http.response_header.status} failed response for #{subscription_id}"
+        log("#{http.response_header.status} failed response for #{subscription_id}")
       end
     rescue => e
-      p "ERROR: #{e}"
+      log("ERROR: #{e}")
     end
   end
 end
