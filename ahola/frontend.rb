@@ -6,7 +6,6 @@ require 'ahola/config'
 require 'ahola/frontend_helpers'
 require 'ahola/store'
 require 'ahola/twitter'
-require 'pp'
 
 module Ahola
   class Frontend < Sinatra::Base
@@ -74,7 +73,6 @@ module Ahola
           access_token = request_token.get_access_token(
                                     :oauth_verifier => params[:oauth_verifier])
           token_store.store(:access_token, user_id, access_token)
-          pp access_token
           twitter_store.store(user_id,
                              access_token.params['user_id'],
                              access_token.params['screen_name'])
