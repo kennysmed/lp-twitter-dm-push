@@ -3,7 +3,7 @@ ruby '1.9.3'
 
 gem 'activesupport'
 gem 'em-hiredis'
-gem 'em-http-request'
+gem 'em-http-request', "~> 1.0.2"
 gem 'em-rspec'
 gem 'oauth'
 gem 'rack-test'
@@ -13,6 +13,6 @@ gem 'redis-namespace'
 gem 'simple_oauth'
 gem 'sinatra'
 gem 'thin'
-gem 'tweetstream'
+gem "tweetstream", "~> 2.5.0"
 gem 'uuid'
 gem 'webmock'
