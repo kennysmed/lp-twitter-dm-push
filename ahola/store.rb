@@ -71,7 +71,7 @@ module Ahola
       # Get any events (eg, direct messages) that have been stored.
       # And then delete them from the store.
       def get_and_reset_messages!(id)
-        log "get_and_reset_messages#{id}"
+        log "get_and_reset_messages #{id}"
         vals = redis.multi do
           redis.lrange(id, 0, -1)
           redis.del(id)
