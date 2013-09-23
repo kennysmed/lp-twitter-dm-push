@@ -147,7 +147,12 @@ describe "BERG Cloud" do
     end
 
     it "does NOT delete user when 200 is returned from the post" do
-      # TODO: Test it does the 'puts'?
+      @response_header.stub(:status).and_return(200)
+
+      @http.stub(:callback)
+      @http.stub(:errback).and_yield()
+      @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
+      
       @berg_cloud.registration_store.should_not_receive('del')
       @berg_cloud.print_message(@user_id, @direct_message)
     end
@@ -160,17 +165,6 @@ describe "BERG Cloud" do
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
 
       @berg_cloud.registration_store.should_receive('del').with(@user_id)
-      @berg_cloud.print_message(@user_id, @direct_message)
-    end
-
-    it "does NOT delete user when the post request fails" do
-      @response_header.stub(:status).and_return(200)
-
-      @http.stub(:callback)
-      @http.stub(:errback).and_yield()
-      @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
-      
-      @berg_cloud.registration_store.should_not_receive('del')
       @berg_cloud.print_message(@user_id, @direct_message)
     end
   end
