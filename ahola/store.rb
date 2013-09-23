@@ -175,16 +175,17 @@ module Ahola
     # Once the user has authenticated we store their Twitter user ID and
     # screen name here.
     # Keyed by the uuid we've assigned to them.
-    class TwitterData < RedisBase
+    class Twitter < RedisBase
       def store(id, user_id, screen_name)
-        redis.hset(:twitter, id, Marshal.dump([user_id, screen_name]))
+        redis.hset(:twitter, id, Marshal.dump([user_id.to_s, screen_name]))
       end
 
+      # NOTE: The returned Twitter user_id will be a string.
       def get(id)
         if data = redis.hget(:twitter, id)
           user_id, screen_name = Marshal.load(data)
         end
-        [user_id.to_i, screen_name]
+        [user_id, screen_name]
       end
     end
 

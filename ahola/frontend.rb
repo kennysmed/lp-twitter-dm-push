@@ -6,6 +6,7 @@ require 'ahola/config'
 require 'ahola/frontend_helpers'
 require 'ahola/store'
 require 'ahola/twitter'
+require 'pp'
 
 module Ahola
   class Frontend < Sinatra::Base
@@ -21,8 +22,8 @@ module Ahola
 
     token_store = Ahola::Store::Token.new
     subscription_store = Ahola::Store::Subscription.new
-    registrations = Ahola::Store::Registration.new
-    twitter_data = Ahola::Store::TwitterData.new
+    registration_store = Ahola::Store::Registration.new
+    twitter_store = Ahola::Store::Twitter.new
     
     get '/' do
       format_title
@@ -73,7 +74,8 @@ module Ahola
           access_token = request_token.get_access_token(
                                     :oauth_verifier => params[:oauth_verifier])
           token_store.store(:access_token, user_id, access_token)
-          twitter_data.store(user_id,
+          pp access_token
+          twitter_store.store(user_id,
                              access_token.params['user_id'],
                              access_token.params['screen_name'])
           token_store.del(:request_token, user_id)
@@ -117,7 +119,7 @@ module Ahola
       if access_token = token_store.get(
                                   :access_token, user_id, Ahola::Twitter.consumer)
         subscription_store.store(user_id, subscription_id, endpoint)
-        registrations.add(user_id)
+        registration_store.add(user_id)
       else
         valid = false
       end

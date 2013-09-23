@@ -8,13 +8,13 @@ require 'em-hiredis'
 
 
 class Ahola::Background
-  attr_accessor :token_store, :subscription_store, :registrations, :twitter_data, :bergcloud, :clients
+  attr_accessor :token_store, :subscription_store, :registrations, :twitter_store, :bergcloud, :clients
 
   def initialize
     @token_store = Ahola::Store::Token.new
     @subscription_store = Ahola::Store::Subscription.new
     @registrations = Ahola::Store::Registration.new
-    @twitter_data = Ahola::Store::TwitterData.new
+    @twitter_store = Ahola::Store::Twitter.new
     @bergcloud = Ahola::BergCloud.new
 
     @clients = []
@@ -26,7 +26,7 @@ class Ahola::Background
 
   def setup_stream(clients, id)
     token, secret = token_store.get_credentials(:access_token, id)
-    user_id, screen_name = twitter_data.get(id)
+    user_id, screen_name = twitter_store.get(id)
     puts "Streaming #{screen_name}"
 
     stream = Ahola::Twitter.tweetstream(token, secret)
@@ -35,7 +35,7 @@ class Ahola::Background
     stream.on_direct_message do |message|
       # We get notified of DMs the user has sent, as well as received.
       # We want to ignore those.
-      if message[:sender][:id] != user_id
+      if message[:sender][:id_str] != user_id
         bergcloud.direct_message(id, message)
       end
     end
