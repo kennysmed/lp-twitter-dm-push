@@ -27,7 +27,7 @@ class Ahola::Background
   def setup_stream(clients, id)
     token, secret = token_store.get_credentials(:access_token, id)
     user_id, screen_name = twitter_data.get(id)
-    puts "streaming #{screen_name}"
+    puts "Streaming #{screen_name}"
 
     stream = Ahola::Twitter.tweetstream(token, secret)
     clients << stream
@@ -54,7 +54,7 @@ class Ahola::Background
     stream.on_unauthorized do
       registrations.del(id)
       clients.delete(stream)
-      puts "removing #{screen_name} from processing"
+      puts "Removing #{screen_name} from processing"
       stream.stop_stream
     end
 
@@ -85,7 +85,7 @@ class Ahola::Background
 
 
   def poll_registrations
-    puts "polling registrations"
+    puts "Polling registrations"
     em_redis.blpop('ahola:new', 0).callback do |list, new_id|
       stream = setup_stream(clients, new_id) # blocking redis :/
       # stream.userstream(:with => :user, :replies => :all)
