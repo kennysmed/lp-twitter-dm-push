@@ -17,7 +17,8 @@ module Ahola
     end
 
     def self.tweetstream(token, secret)
-      p "token: #{token}, secret: #{secret}"
+      p "key: #{consumer.key}, secret: #{consumer.secret}"
+
       TweetStream::Client.new(
         :consumer_key => consumer.key,
         :consumer_secret => consumer.secret,
