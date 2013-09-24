@@ -35,6 +35,8 @@ class Ahola::Background
     stream.on_direct_message do |message|
       # We get notified of DMs the user has sent, as well as received.
       # We want to ignore those.
+      p user_id
+      p message[:sender]
       if message[:sender][:id_str] != user_id
         bergcloud.direct_message(id, message)
       end
