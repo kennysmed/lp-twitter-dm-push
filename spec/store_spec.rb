@@ -234,16 +234,16 @@ describe "Store" do
     end
 
     it "stores data" do
-      @twitter_store.store(@user_ids[0], '10765432100123456789', 'philgyford')
+      @twitter_store.store(@user_ids[0], 10765432100123456789, 'philgyford')
       user_data = Marshal.load(@twitter_store.redis.hget(:twitter, @user_ids[0]))
-      expect(user_data[0]).to eq('10765432100123456789')
+      expect(user_data[0]).to eq(10765432100123456789)
       expect(user_data[1]).to eq('philgyford')
     end
     
     it "retrieves data" do
-      @twitter_store.redis.hset(:twitter, @user_ids[0], Marshal.dump(['10765432100123456789', 'philgyford']))
+      @twitter_store.redis.hset(:twitter, @user_ids[0], Marshal.dump([10765432100123456789, 'philgyford']))
       user_data = @twitter_store.get(@user_ids[0])
-      expect(user_data[0]).to eq('10765432100123456789')
+      expect(user_data[0]).to eq(10765432100123456789)
       expect(user_data[1]).to eq('philgyford')
     end
   end
