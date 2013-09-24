@@ -101,17 +101,22 @@ module Ahola
       end
       content_type :json
       valid = true
+      errors = []
 
       if subscription_id == 0
         valid = false
+        errors << "Invalid subscription ID"
       end
       if endpoint.nil?
         valid = false
+        errors << "No BERG Cloud API endpoint supplied"
       elsif ! endpoint[/^https?\:\/\/api\.bergcloud\.com\//]
         valid = false
+        errors << "Invalid domain for BERG Cloud API endpoint"
       end
       if user_id.nil?
         valid = false
+        errors << "No user ID supplied in config data"
       end
 
       if access_token = token_store.get(
@@ -120,9 +125,14 @@ module Ahola
         registration_store.add(user_id)
       else
         valid = false
+        errors << "No Twitter access token found"
       end
 
-      {:valid => valid}.to_json
+      if valid
+        {:valid => valid}.to_json
+      else
+        {:valid => valid, :errors => errors}.to_json
+      end
     end
 
 

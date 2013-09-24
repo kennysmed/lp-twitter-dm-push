@@ -242,36 +242,42 @@ describe "Frontend" do
       @post_args[:subscription_id] = 'test'
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("Invalid subscription ID")
     end
 
     it "returns false with no subscription_id" do
       @post_args.delete(:subscription_id)
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("Invalid subscription ID")
     end
 
     it "returns false with invalid endpoint" do
       @post_args[:endpoint] = 'http://www.example.org/an/endpoint'
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("Invalid domain for BERG Cloud API endpoint")
     end
 
     it "returns false with no endpoint" do
       @post_args.delete(:endpoint)
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("No BERG Cloud API endpoint supplied")
     end
 
     it "returns false with invalid user_id" do
       @post_args[:config] = {:id => 99}.to_json
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("No Twitter access token found")
     end
 
     it "returns false with no user_id" do
       @post_args.delete(:config)
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("No user ID supplied in config data")
     end
 
     it "stores a new subscription" do
