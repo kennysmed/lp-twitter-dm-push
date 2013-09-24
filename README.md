@@ -6,8 +6,7 @@ In progress. Start with:
 
 ## TODO
 
-* Merge TwitterData and Subscription store into Subscription. Change Marshalled
-  array to a hash.
+* Look through tests again - mock all the http requests?
 
 
 ## NOTE when running tests

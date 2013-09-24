@@ -116,7 +116,6 @@ module Ahola
 
       if access_token = token_store.get(
                                   :access_token, user_id, Ahola::Twitter.consumer)
-        p "id: #{user_id}, sid: #{subscription_id}, e: #{endpoint}"
         subscription_store.store(user_id, subscription_id, endpoint)
         registration_store.add(user_id)
       else

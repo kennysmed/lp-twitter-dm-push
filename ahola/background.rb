@@ -77,9 +77,8 @@ class Ahola::Background
 
 
   def start
-    clients.each do |client|
-      # client.userstream(:with => :user, :replies => :all)
-      client.userstream(:with => :user)
+    clients.each do |stream|
+      start_stream(stream)
     end
   end
 
@@ -88,12 +87,14 @@ class Ahola::Background
     puts "Polling registrations"
     em_redis.blpop('ahola:new', 0).callback do |list, new_id|
       stream = setup_stream(clients, new_id) # blocking redis :/
-      # stream.userstream(:with => :user, :replies => :all)
-      stream.userstream(:with => :user)
+      start_stream(stream)
       EventMachine.next_tick { poll_registrations }
     end
   end
 
+  def start_stream(stream)
+    stream.userstream(:with => :user)
+  end
 
   def start_emitting_events
     bergcloud.start_emitting
