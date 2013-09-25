@@ -231,21 +231,53 @@ describe "Store" do
 
     before :each do
       @twitter_store = Ahola::Store::Twitter.new
+      @twitter_id = 10765432100123456789
+      @uuid = @user_ids[0]
     end
 
     it "stores data" do
-      @twitter_store.store(@user_ids[0], 10765432100123456789, 'philgyford')
-      user_data = Marshal.load(@twitter_store.redis.hget(:twitter, @user_ids[0]))
-      expect(user_data[0]).to eq(10765432100123456789)
-      expect(user_data[1]).to eq('philgyford')
+      @twitter_store.store(@uuid, @twitter_id)
+      twid = @twitter_store.redis.hget(:uuid, @uuid)
+      expect(twid.to_i).to eq(@twitter_id)
+      uuid = @twitter_store.redis.hget(:twid, @twitter_id)
+      expect(uuid).to eq(@uuid)
     end
     
-    it "retrieves data" do
-      @twitter_store.redis.hset(:twitter, @user_ids[0], Marshal.dump([10765432100123456789, 'philgyford']))
-      user_data = @twitter_store.get(@user_ids[0])
-      expect(user_data[0]).to eq(10765432100123456789)
-      expect(user_data[1]).to eq('philgyford')
+    it "retrieves UUID" do
+      @twitter_store.redis.hset(:twid, @twitter_id, @uuid)
+      expect(@twitter_store.get_id(@twitter_id)).to eq(@uuid)
     end
+
+    it "retrieves Twitter ID" do
+      @twitter_store.redis.hset(:uuid, @uuid, @twitter_id)
+      expect(@twitter_store.get_twitter_id(@uuid)).to eq(@twitter_id)
+    end
+
+    it "gets all Twitter IDs" do
+      @twitter_store.redis.hset(:twid, @twitter_id, @user_ids[0])
+      @twitter_store.redis.hset(:twid, 12345, @user_ids[1])
+      ids = @twitter_store.all_twitter_ids
+      expect(ids).to include(@twitter_id)
+      expect(ids).to include(12345)
+    end
+
+    it "gets all UUIDs" do
+      @twitter_store.redis.hset(:uuid, @user_ids[0], @twitter_id)
+      @twitter_store.redis.hset(:uuid, @user_ids[1], 12345)
+      ids = @twitter_store.all_ids
+      expect(ids).to include(@user_ids[0])
+      expect(ids).to include(@user_ids[1])
+    end
+
+    it "deletes by UUID" do
+      @twitter_store.redis.hset(:twid, @twitter_id, @uuid)
+      @twitter_store.redis.hset(:uuid, @uuid, @twitter_id)
+      @twitter_store.del_by_id(@uuid)
+      expect(@twitter_store.redis.hget(:twid, @twitter_id)).to be_nil
+      expect(@twitter_store.redis.hget(:uuid, @uid)).to be_nil
+    end
+
+
   end
   
 

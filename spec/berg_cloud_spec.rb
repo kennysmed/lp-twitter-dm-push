@@ -158,7 +158,8 @@ describe "BERG Cloud" do
       @http.stub(:errback).and_yield()
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
       
-      @berg_cloud.registration_store.should_not_receive('del')
+      @berg_cloud.registration_store.should_not_receive(:del)
+      @berg_cloud.twitter_store.should_not_receive(:del_by_id)
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
@@ -169,7 +170,8 @@ describe "BERG Cloud" do
       @http.stub(:errback)
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
 
-      @berg_cloud.registration_store.should_receive('del').with(@user_id)
+      @berg_cloud.registration_store.should_receive(:del).with(@user_id)
+      @berg_cloud.twitter_store.should_receive(:del_by_id).with(@user_id)
       @berg_cloud.print_message(@user_id, @direct_message)
     end
   end

@@ -16,12 +16,12 @@ module Ahola
         :site => "https://api.twitter.com")
     end
 
-    def self.tweetstream(token, secret)
+    def self.client()
       ::TweetStream::Client.new(
         :consumer_key => consumer.key,
         :consumer_secret => consumer.secret,
-        :oauth_token => token,
-        :oauth_token_secret => secret,
+        :oauth_token => config[:twitter_access_token],
+        :oauth_token_secret => config[:twitter_access_token_secret],
         :auth_method => :oauth
       )
     end

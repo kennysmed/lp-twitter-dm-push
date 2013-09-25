@@ -12,8 +12,6 @@ require 'active_support/core_ext/numeric/time'
 require 'active_support/core_ext/time/calculations'
 
 processor = Ahola::Background.new
-processor.setup_registrations
-
 config = Ahola::Config.new
 
 EM.run do

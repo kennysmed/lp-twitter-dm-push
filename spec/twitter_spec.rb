@@ -9,9 +9,7 @@ describe "Twitter" do
   end
 
   it "returns a TweetStream Client" do
-    oauth_token = 'NPcudxy0yU5T3tBzho7iCotZ3cnetKwcTIRlX0iwRl0'
-    oauth_token_secret = 'veNRnAWe6inFuo8o2u8SLLZLjolYDmDP7SzL0YfYI'
-    expect(Ahola::Twitter.tweetstream(oauth_token, oauth_token_secret)).to be_an_instance_of(TweetStream::Client)
+    expect(Ahola::Twitter.client).to be_an_instance_of(TweetStream::Client)
   end
 
 end

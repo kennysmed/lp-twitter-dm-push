@@ -172,19 +172,42 @@ module Ahola
     end
 
 
-    # Once the user has authenticated we store their Twitter user ID and
-    # screen name here.
-    # Keyed by the uuid we've assigned to them.
+    # Once the user has authenticated we store their Twitter user ID and our UUID.
+    # We have two hashes, so we can fetch one ID if given the other.
     class Twitter < RedisBase
-      def store(id, user_id, screen_name)
-        redis.hset(:twitter, id, Marshal.dump([user_id, screen_name]))
+      def initialize
+        super
+        @redis = Redis::Namespace.new(:twitter, :redis => @redis)
       end
 
-      def get(id)
-        if data = redis.hget(:twitter, id)
-          user_id, screen_name = Marshal.load(data)
-        end
-        [user_id, screen_name]
+      def store(id, twitter_id)
+        redis.hset(:twid, twitter_id, id)
+        redis.hset(:uuid, id, twitter_id)
+      end
+
+      # Get our UUID from a Twitter user ID.
+      def get_id(twitter_id)
+        redis.hget(:twid, twitter_id)
+      end
+
+      # Get the Twitter ID from our UUID.
+      def get_twitter_id(id)
+        twid = redis.hget(:uuid, id)
+        twid.to_i if twid
+      end
+
+      def all_twitter_ids
+        redis.hkeys(:twid).map{ |id| id.to_i }
+      end
+
+      def all_ids
+        redis.hkeys(:uuid)
+      end
+
+      def del_by_id(id)
+        twitter_id = get_twitter_id(id)
+        redis.hdel(:uuid, id)
+        redis.hdel(:twid, twitter_id)
       end
     end
 

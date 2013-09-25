@@ -201,6 +201,9 @@ describe "Frontend" do
       #p "HERE"
       #p token_store.get(:request_token, @user_id, consumer)
     #end
+    
+    #it "stores twitter data" do
+    #end
 
     it "requires a return_url" do
       get "/authorised/?error_url=#{@error_url}"

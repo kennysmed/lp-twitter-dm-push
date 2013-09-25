@@ -31,9 +31,12 @@ Also, config data is read from `config.yml.test` rather than anything in
     # If not present, then it's assumed Redis is running on localhost.
     REDISCLOUD_URL
 
-    # From your Twitter application's Details page.
+    # From your Twitter application's Details page. You will need an app that
+	has 'Read, write and direct messages' permissions, and access to Site Streams.
     TWITTER_CONSUMER_KEY
     TWITTER_CONSUMER_SECRET
+	TWITTER_ACCESS_TOKEN
+	TWITTER_ACCESS_TOKEN_SECRET
 
     # From the bottom of your publication's page in Remote > Your publications.
     BERGCLOUD_CONSUMER_KEY

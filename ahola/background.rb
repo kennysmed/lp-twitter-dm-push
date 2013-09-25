@@ -1,3 +1,13 @@
+
+# TODO:
+#
+# * How do we get notified a user has de-authed with our app? 
+#   * If we do get notified, then we'll need to remove a user from a stream.
+#   * In which case we need to map twitter_id => stream.
+# * Change Ahola::Twitter.tweetstream to be .client and use app's token and secret.
+#
+# Need to ensure a user can only associate one twitter account with one LP.
+
 require 'ahola/config'
 require 'ahola/store'
 require 'ahola/twitter'
@@ -7,13 +17,13 @@ require 'em-http'
 require 'em-hiredis'
 
 
+# Call start() to kick off the streaming.
+# Then poll_registrations() to keep checking for new users to stream for.
+# Then start_emitting_events() to kick off printing stored messages.
 class Ahola::Background
-  attr_accessor :token_store, :subscription_store, :registrations, :twitter_store, :bergcloud, :clients
+  attr_accessor :twitter_store, :bergcloud, :clients
 
   def initialize
-    @token_store = Ahola::Store::Token.new
-    @subscription_store = Ahola::Store::Subscription.new
-    @registrations = Ahola::Store::Registration.new
     @twitter_store = Ahola::Store::Twitter.new
     @bergcloud = Ahola::BergCloud.new
 
@@ -24,95 +34,92 @@ class Ahola::Background
     @config ||= Ahola::Config.new
   end
 
-  def setup_stream(clients, id)
-    token, secret = token_store.get_credentials(:access_token, id)
-    user_id, screen_name = twitter_store.get(id)
-    puts "Streaming #{screen_name}"
-
-    stream = Ahola::Twitter.tweetstream(token, secret)
-    clients << stream
-
-    stream.on_direct_message do |message|
-      # We get notified of DMs the user has sent, as well as received.
-      # We want to ignore ones they've sent.
-      if message[:sender][:id] != user_id
-        bergcloud.direct_message(id, message)
-      end
-    end
-
-    # stream.on_timeline_status do |tweet|
-    #   if tweet.retweet?
-    #     rt = tweet.retweeted_status
-    #     if rt.user.id == user_id
-    #       bergcloud.retweet(id)
-    #     end
-    #   elsif tweet.user_mentions.any? { |m| m.id == user_id }
-    #     bergcloud.mention(id)
-    #   end
-    # end
-
-    stream.on_unauthorized do
-      registrations.del(id)
-      clients.delete(stream)
-      puts "Removing #{screen_name} from processing"
-      stream.stop_stream
-    end
-
-    # stream.on_event('follow') do |follow|
-    #   if follow[:target][:id] == user_id
-    #     bergcloud.new_follower(id)
-    #   end
-    # end
-
-    return stream
-  end
-
-
-  def setup_registrations
-    registrations.fresh!
-    registrations.each do |id|
-      setup_stream(clients, id)
+  def log(str)
+    if ENV['RACK_ENV'] != 'test'
+      puts str
     end
   end
 
 
   def start
-    clients.each do |stream|
-      start_stream(stream)
+    log("Starting Twitter Site Streams")
+    add_initial_users(twitter_store.all_twitter_ids)
+  end
+
+
+  # If we were going to be starting loads of streams, we'd have to ensure
+  # we only started up to 25 per second. But we're not.
+  def add_initial_users(twitter_ids)
+    while twitter_ids.length > 0 do
+      start_new_stream( twitter_ids.slice!(0,1000) )
     end
+  end
+
+
+  def start_new_stream(twitter_ids)
+    log("Starting new stream for #{twitter_ids.length} user(s)")
+
+    client = new_client
+        
+    clients << add_first_users_to_stream(client, twitter_ids)
+  end
+
+
+  # Receives an array of up to 1000 Twitter IDs.
+  def add_first_users_to_stream(client, twitter_ids)
+    client.sitestream(twitter_ids.slice!(0,100))
+
+    twitter_ids.each do |id|
+      client.control.add_user(id)
+    end
+
+    return client
+  end
+
+
+  def new_client
+    client = Ahola::Twitter.client
+
+    client.on_direct_message do |message|
+      if id = twitter_store.get_id(message[:recipient][:id])
+        bergcloud.direct_message(id, message)
+      end
+    end
+
+    return client
   end
 
 
   def poll_registrations
-    puts "Polling registrations"
+    log("Polling registrations")
     em_redis.blpop('ahola:new', 0).callback do |list, new_id|
-      stream = setup_stream(clients, new_id) # blocking redis :/
-      start_stream(stream)
+      if twitter_id = twitter_store.get_twitter_id(new_id)
+        add_user(twitter_id)
+      end
       EventMachine.next_tick { poll_registrations }
     end
   end
 
-  def start_stream(stream)
-    stream.userstream(:with => :user)
+  def latest_client
+    return clients.last
   end
+
+
+  def add_user(twitter_id)
+    client = latest_client
+    result = client.add_user(twitter_id)
+    # TODO: Check result? 
+  end
+
+
+  def remove_user(twitter_id)
+    # TODO: How do we know which stream to remove them from?
+  end
+
 
   def start_emitting_events
     bergcloud.start_emitting
   end
 
-
-  # def hourly_flourish
-  #   delay = Time.now.beginning_of_hour + 1.hour - Time.now
-  #   EM.add_timer(delay) do
-  #     registrations.each do |id|
-  #       bergcloud.flourish!(id)
-  #     end
-  #     hourly_flourish
-  #   end
-  # end
-
-
-  def em_redis
-    @redis ||= EM::Hiredis.connect(config[:rediscloud_url] || "redis://localhost:6379")
-  end
 end
+

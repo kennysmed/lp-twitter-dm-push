@@ -40,9 +40,9 @@ module Ahola
       return_url, error_url = check_berg_urls(
                                           params[:return_url], params[:error_url])
     
-      user_id = ::UUID.generate
+      id = ::UUID.generate
       consumer = Ahola::Twitter.consumer
-      query = ::URI.encode_www_form(:id => user_id,
+      query = ::URI.encode_www_form(:id => id,
                                     :return_url => return_url,
                                     :error_url => error_url)
       callback_url = url('/authorised/') + "?" + query
@@ -52,7 +52,7 @@ module Ahola
       rescue ::OAuth::Unauthorized
         redirect error_url
       end
-      token_store.store(:request_token, user_id, request_token)
+      token_store.store(:request_token, id, request_token)
       redirect request_token.authorize_url(:oauth_callback => callback_url)
     end
 
@@ -65,19 +65,17 @@ module Ahola
         redirect error_url
       end
 
-      user_id = params[:id]
+      id = params[:id]
       consumer = Ahola::Twitter.consumer
 
       begin
-        if request_token = token_store.get(:request_token, user_id, consumer)
+        if request_token = token_store.get(:request_token, id, consumer)
           access_token = request_token.get_access_token(
                                     :oauth_verifier => params[:oauth_verifier])
-          token_store.store(:access_token, user_id, access_token)
-          twitter_store.store(user_id,
-                             access_token.params['user_id'],
-                             access_token.params['screen_name'])
-          token_store.del(:request_token, user_id)
-          query = ::URI.encode_www_form("config[id]" => user_id)
+          token_store.store(:access_token, id, access_token)
+          token_store.del(:request_token, id)
+          twitter_store.store(id, access_token.params['user_id'])
+          query = ::URI.encode_www_form("config[id]" => id)
           # All good, send the user back to Remote.
           redirect return_url + "?" + query
         else
@@ -97,7 +95,7 @@ module Ahola
       endpoint = params[:endpoint]
       if params[:config]
         config = JSON.parse(params[:config])
-        user_id = config['id']
+        id = config['id']
       end
       content_type :json
       valid = true
@@ -114,15 +112,14 @@ module Ahola
         valid = false
         errors << "Invalid domain for BERG Cloud API endpoint"
       end
-      if user_id.nil?
+      if id.nil?
         valid = false
-        errors << "No user ID supplied in config data"
+        errors << "No ID supplied in config data"
       end
 
-      if access_token = token_store.get(
-                                  :access_token, user_id, Ahola::Twitter.consumer)
-        subscription_store.store(user_id, subscription_id, endpoint)
-        registration_store.add(user_id)
+      if access_token = token_store.get(:access_token, id, Ahola::Twitter.consumer)
+        subscription_store.store(id, subscription_id, endpoint)
+        registration_store.add(id)
       else
         valid = false
         errors << "No Twitter access token found"
