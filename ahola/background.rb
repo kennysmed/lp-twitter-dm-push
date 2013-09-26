@@ -106,7 +106,13 @@ class Ahola::Background
 
 
   def add_user(twitter_id)
-    add_user_to_client(latest_client, twitter_id)
+    if clients.length > 0
+      add_user_to_client(latest_client, twitter_id)
+    else
+      # A rare case - no users yet so no clients have been created.
+      # Probably the very first user subscribing.
+      add_initial_users([twitter_id])
+    end
   end
 
 

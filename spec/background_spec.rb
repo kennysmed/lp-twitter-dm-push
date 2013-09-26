@@ -94,6 +94,11 @@ describe "Background" do
     end
   end
 
+  it "adds a user when there are no clients" do
+    expect(@background).to receive(:add_initial_users).with([@twitter_ids[0]])
+    @background.add_user(@twitter_ids[0])
+  end
+
   # TODO:
   #it "removes a user" do
   #end
