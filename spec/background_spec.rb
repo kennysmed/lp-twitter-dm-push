@@ -3,6 +3,7 @@ require 'ahola/background'
 require 'uuid'
 require 'tweetstream'
 require 'tweetstream/site_stream_client'
+require 'em-rspec'
 
 
 describe "Background" do
@@ -100,6 +101,10 @@ describe "Background" do
   it "starts emitting events" do
     expect(@background.bergcloud).to receive(:start_emitting)
     @background.start_emitting_events
+  end
+
+  it "has a redis" do
+    expect(@background.em_redis).to be_an_instance_of(EventMachine::Hiredis::Client)
   end
 
 end

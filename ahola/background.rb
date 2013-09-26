@@ -124,5 +124,8 @@ class Ahola::Background
     bergcloud.start_emitting
   end
 
+  def em_redis
+    @redis ||= EM::Hiredis.connect(config[:rediscloud_url] || "redis://localhost:6379")
+  end
 end
 
