@@ -80,7 +80,13 @@ class Ahola::Background
   def new_client
     client = Ahola::Twitter.client
 
+    client.on_timeline_status do |status|
+      puts "timeline status"
+      puts status.text
+    end
+
     client.on_direct_message do |message|
+      puts "Direct Message"
       if id = twitter_store.get_id(message[:recipient][:id])
         bergcloud.direct_message(id, message)
       end
