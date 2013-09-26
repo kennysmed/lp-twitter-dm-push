@@ -49,7 +49,7 @@ module Ahola
 
       # We keep a list of messages for each user, in case they get loads.
       def direct_message!(id, message)
-        log "store direct message"
+        log "Store direct message"
         # This is the data about a message that we store in the database:
         m = {
               :created_at => message.created_at,

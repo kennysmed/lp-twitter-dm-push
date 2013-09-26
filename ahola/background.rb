@@ -109,6 +109,7 @@ class Ahola::Background
     add_user_to_client(latest_client, twitter_id)
   end
 
+
   def add_user_to_client(client, twitter_id)
     result = client.control.add_user(twitter_id)
   end

@@ -280,7 +280,7 @@ describe "Frontend" do
       @post_args.delete(:config)
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
-      expect(JSON.parse(last_response.body)['errors'][0]).to eq("No user ID supplied in config data")
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("No ID supplied in config data")
     end
 
     it "stores a new subscription" do
