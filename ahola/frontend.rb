@@ -91,7 +91,7 @@ module Ahola
     # subscribes, with the subscription ID and the endpoint that we send
     # content to to be printed.
     post '/validate_config/' do
-      subscription_id = params[:subscription_id].to_i
+      subscription_id = params[:subscription_id]
       endpoint = params[:endpoint]
       if params[:config]
         config = JSON.parse(params[:config])
