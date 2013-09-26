@@ -41,54 +41,65 @@ describe "Background" do
   end
 
   it "adds first users to a stream" do
-    client = Ahola::Twitter.client
-    expect(client).to receive(:sitestream).with(@twitter_ids)
-    returned = @background.add_first_users_to_stream(client, @twitter_ids.dup)
-    expect(returned).to eq(client)
-  end
+    bulk_add_limit = 100
+    twitter_ids = (0..bulk_add_limit+rand(50)).collect { rand(4000) }
+    extras = twitter_ids[bulk_add_limit..-1]
 
-  it "adds many first useres to a stream" do
-    twitter_ids = *(1..110)
-    client = Ahola::Twitter.client
-    client.stub(:sitestream)
+    client = double('client')
+    expect(client).to receive(:sitestream).with(twitter_ids[0...bulk_add_limit])
 
+    client_control = double('client_control')
+    expect(client).to receive(:control).exactly(extras.length).times.and_return(client_control)
+    expect(client_control).to receive(:add_user).exactly(extras.length).times.and_return {extras.shift}
 
-    # TODO: Can't work out how to stub / test client.control.add_user()
-    client.stub(:control).stub(:add_user).and_return('hi')
-    TweetStream::SiteStreamClient.any_instance.stub(:add_user)
-    p client.control.add_user
-    expect(client.control).to receive(:add_user).with(101)
-
-
-    @background.add_first_users_to_stream(client, @twitter_ids.dup)
-  end
-
-
-
-  it "adds large numbers of users via control streams" do
-    ::TweetStream::Client.any_instance.stub(:sitestream)
-    ::TweetStream::SiteStreamClient.any_instance.stub(:add_user)
-    @background.start_new_stream( (1..110).to_a )
-
-
+    @background.add_first_users_to_stream(client, twitter_ids)
   end
 
   it "creates a new Twitter client" do
+    expect(@background.new_client).to be_an_instance_of(::TweetStream::Client)
   end
 
+  # TODO: Don't know how to test the Event Machine stuff.
   it "polls registrations" do
   end
 
-  it "returns the latest client" do
+  describe "with several clients" do
+    before :each do
+      @num_clients = 4
+      client = double('client')
+      client_control = double('client_control')
+      client.stub(:control).and_return(client_control)
+      (1..@num_clients).each do |n|
+        # A fake method, so we can tell which client is which.
+        client.stub(:id) { n }
+        @background.clients << client
+      end
+    end
+
+    it "returns the latest client" do
+      expect(@background.latest_client.id).to eq(@num_clients) 
+    end
+
+    it "adds a user to the latest client" do
+      client = @background.clients.last
+      expect(@background).to receive(:add_user_to_client).with(client, @twitter_ids[0])
+      @background.add_user(@twitter_ids[0])
+    end
+
+    it "adds a user to a client" do
+      client = @background.clients.last
+      expect(client.control).to receive(:add_user).with(@twitter_ids[0])
+      @background.add_user_to_client(client, @twitter_ids[0])
+    end
   end
 
-  it "adds a user" do
-  end
-
-  it "removes a user" do
-  end
+  # TODO:
+  #it "removes a user" do
+  #end
 
   it "starts emitting events" do
+    expect(@background.bergcloud).to receive(:start_emitting)
+    @background.start_emitting_events
   end
 
 end

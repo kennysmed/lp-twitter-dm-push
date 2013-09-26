@@ -70,7 +70,7 @@ class Ahola::Background
     client.sitestream(twitter_ids.slice!(0,100))
 
     twitter_ids.each do |id|
-      client.control.add_user(id)
+      add_user_to_client(client, id)
     end
 
     return client
@@ -106,9 +106,11 @@ class Ahola::Background
 
 
   def add_user(twitter_id)
-    client = latest_client
-    result = client.add_user(twitter_id)
-    # TODO: Check result? 
+    add_user_to_client(latest_client, twitter_id)
+  end
+
+  def add_user_to_client(client, twitter_id)
+    result = client.control.add_user(twitter_id)
   end
 
 
