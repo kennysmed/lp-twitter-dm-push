@@ -2,7 +2,7 @@
 
 In progress. Start with:
 
-	$ forman start
+	$ foreman start
 
 ## TODO
 
