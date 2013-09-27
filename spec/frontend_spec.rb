@@ -227,7 +227,7 @@ describe "Frontend" do
   describe "posting to /validate_config/" do
     before :each do
       @post_args = {
-        :subscription_id => 32,
+        :subscription_id => '2ca7287d935ae2a6a562a3a17bdddcbe81e79d43',
         :config => {:id => @user_id}.to_json,
         :endpoint => "http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e",
       }
@@ -241,18 +241,11 @@ describe "Frontend" do
       expect(JSON.parse(last_response.body)['valid']).to be_true
     end
 
-    it "returns false with invalid subscription_id" do
-      @post_args[:subscription_id] = 'test'
-      post "/validate_config/", @post_args
-      expect(JSON.parse(last_response.body)['valid']).to be_false
-      expect(JSON.parse(last_response.body)['errors'][0]).to eq("Invalid subscription ID")
-    end
-
     it "returns false with no subscription_id" do
       @post_args.delete(:subscription_id)
       post "/validate_config/", @post_args
       expect(JSON.parse(last_response.body)['valid']).to be_false
-      expect(JSON.parse(last_response.body)['errors'][0]).to eq("Invalid subscription ID")
+      expect(JSON.parse(last_response.body)['errors'][0]).to eq("No subscription ID supplied")
     end
 
     it "returns false with invalid endpoint" do
@@ -286,7 +279,7 @@ describe "Frontend" do
     it "stores a new subscription" do
       post "/validate_config/", @post_args
       subs = Ahola::Store::Subscription.new.get(@user_id)
-      expect(subs[0]).to eq(32)
+      expect(subs[0]).to eq('2ca7287d935ae2a6a562a3a17bdddcbe81e79d43')
       expect(subs[1]).to eq("http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e")
     end
 

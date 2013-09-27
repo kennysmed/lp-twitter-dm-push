@@ -101,9 +101,9 @@ module Ahola
       valid = true
       errors = []
 
-      if subscription_id == 0
+      if subscription_id.nil?
         valid = false
-        errors << "Invalid subscription ID"
+        errors << "No subscription ID supplied"
       end
       if endpoint.nil?
         valid = false
