@@ -4,9 +4,6 @@ In progress. Start with:
 
 	$ foreman start
 
-## TODO
-
-* Look through tests again - mock all the http requests?
 
 
 ## NOTE when running tests
