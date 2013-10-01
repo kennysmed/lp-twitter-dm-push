@@ -51,4 +51,10 @@ Or, these can all be set in a `config.yml` file at the same level as
 	base_url: http://0.0.0.0:5000/
 	...
 
+## Trial scripts
+
+`trial_scripts/` contains three scripts for trying out various things on the
+command line. They're left here in case they're useful. They use the same
+`config.yml` file as the main application (the User Streams example needing
+extra variables).
 
