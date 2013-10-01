@@ -97,23 +97,21 @@ describe "BERG Cloud" do
     end
   end
 
-  # TODO
-  # Can't work out how to make this EM stuff testable.
-  #describe "start_emitting" do
-    #it "adds a periodic timer" do
-      #@berg_cloud.emitting_timer_seconds = 0.2
-      #@berg_cloud.event_store.stub(:each).and_return([@user_id])
-      #@berg_cloud.event_store.stub(:get_and_reset_messages!).with(@user_id).and_return([@direct_message])
-      #@berg_cloud.start_emitting
-      #@berg_cloud.should_receive(:print_message).with(@user_id, [@direct_message])
-    #end
+  describe "start_emitting" do
 
-    #it "periodically prints messages from the event store" do
-    #end
+    it "adds a periodic timer" do
+      expect(EventMachine).to receive(:add_periodic_timer).with(@berg_cloud.emitting_timer_seconds)
+      @berg_cloud.start_emitting
+    end
 
-    #it "tries to print any messages it fetches" do
-    #end
-  #end
+    it "gets events from the event store" do
+      allow(EventMachine).to receive(:add_periodic_timer).and_yield
+      @berg_cloud.event_store.stub(:each).and_yield(1).and_yield(2).and_yield(3)
+      expect(@berg_cloud.event_store).to receive(:get_and_reset_messages!).exactly(3).times
+      expect(@berg_cloud).to receive(:print_message).exactly(3).times
+      @berg_cloud.start_emitting
+    end
+  end
 
   describe "print_message" do
     before :all do
