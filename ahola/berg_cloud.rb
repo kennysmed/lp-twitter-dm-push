@@ -55,8 +55,10 @@ class Ahola::BergCloud
   end
 
   # User received a direct message.
-  def direct_message(id, message)
-    event_store.direct_message!(id, message)
+  def direct_message(message)
+    if id = twitter_store.get_id(message.recipient.id)
+      event_store.direct_message!(id, message)
+    end
   end
 
   # Check for new messages every so often.

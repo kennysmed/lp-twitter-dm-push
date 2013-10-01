@@ -67,7 +67,18 @@ class Ahola::Background
 
   # Receives an array of up to 1000 Twitter IDs.
   def add_first_users_to_stream(client, twitter_ids)
-    client.sitestream(twitter_ids.slice!(0,100))
+    log("Adding #{twitter_ids.length} users to stream")
+
+    client.sitestream(twitter_ids.slice!(0,100)) do |hash|
+      if hash[:message][:direct_message]
+        # We get DMs the user has both sent and received.
+        # We only want the ones they've received.
+        if hash[:for_user] == hash[:message][:direct_message][:recipient_id]
+          bergcloud.direct_message(
+                        Twitter::DirectMessage.new(hash[:message][:direct_message]))
+        end
+      end
+    end
 
     twitter_ids.each do |id|
       add_user_to_client(client, id)
@@ -79,13 +90,6 @@ class Ahola::Background
 
   def new_client
     client = Ahola::Twitter.client
-
-    client.on_direct_message do |message|
-      puts "Direct Message"
-      if id = twitter_store.get_id(message[:recipient][:id])
-        bergcloud.direct_message(id, message)
-      end
-    end
 
     return client
   end

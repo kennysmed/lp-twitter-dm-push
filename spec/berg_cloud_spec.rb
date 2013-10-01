@@ -85,8 +85,15 @@ describe "BERG Cloud" do
 
     it "sends a message to event store" do
       user_id = ::UUID.generate
-      Ahola::Store::Event.stub(:direct_message!).with(user_id, @direct_message).and_return(1)
-      expect(@berg_cloud.direct_message(user_id, @direct_message)).to eq(1)
+      Ahola::Store::Event.stub(:direct_message!).with(@direct_message).and_return(1)
+      @berg_cloud.twitter_store.stub(:get_id).with(@direct_message.recipient.id).and_return(user_id)
+      expect(@berg_cloud.direct_message(@direct_message)).to eq(1)
+    end
+
+    it "does nothing when the message is for no user" do
+      Ahola::Store::Event.stub(:direct_message!).with(@direct_message).and_return(1)
+      @berg_cloud.twitter_store.stub(:get_id).with(@direct_message.recipient.id).and_return(nil)
+      expect(@berg_cloud.direct_message(@direct_message)).to eq(nil)
     end
   end
 

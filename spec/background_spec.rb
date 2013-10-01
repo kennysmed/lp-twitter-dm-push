@@ -56,6 +56,48 @@ describe "Background" do
     @background.add_first_users_to_stream(client, twitter_ids)
   end
 
+  describe "deals with a direct message" do
+    before :all do
+      @dm_to_user = {
+        :for_user => 10765432100123456789,
+        :message => {
+          :direct_message => {
+            :id => 9876543210,
+            :recipient_id => 10765432100123456789,
+            :text => "My direct message text"
+          }
+        }
+      }
+      @dm_from_user = {
+        :for_user => 10765432100123456789,
+        :message => {
+          :direct_message => {
+            :id => 9876543210,
+            :recipient_id => 1234567,
+            :text => "My direct message text"
+          }
+        }
+      }
+    end
+
+    it "to the user" do
+      client = double('client')
+      expect(client).to receive(:sitestream).and_yield(@dm_to_user)
+      expect(@background.bergcloud).to receive(:direct_message).with(
+                Twitter::DirectMessage.new(@dm_to_user[:message][:direct_message]))
+
+      @background.add_first_users_to_stream(client, @twitter_ids)
+    end
+
+    it "from the user" do
+      client = double('client')
+      expect(client).to receive(:sitestream).and_yield(@dm_from_user)
+      expect(@background.bergcloud).not_to receive(:direct_message)
+
+      @background.add_first_users_to_stream(client, @twitter_ids)
+    end
+  end
+
   it "creates a new Twitter client" do
     expect(@background.new_client).to be_an_instance_of(::TweetStream::Client)
   end
