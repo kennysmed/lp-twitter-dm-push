@@ -169,14 +169,15 @@ describe "BERG Cloud" do
     end
 
     it "deletes unsubscribed user when 410 is returned from the post" do
+      twitter_id = 12345
       @response_header.stub(:status).and_return(410)
 
       @http.stub(:callback).and_yield()
       @http.stub(:errback)
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
 
+      expect(@berg_cloud.twitter_store).not_to receive(:del_by_id)
       expect(@berg_cloud.registration_store).to receive(:del).with(@user_id)
-      expect(@berg_cloud.twitter_store).to receive(:del_by_id).with(@user_id)
       @berg_cloud.print_message(@user_id, @direct_message)
     end
   end

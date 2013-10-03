@@ -98,6 +98,7 @@ describe "Store" do
       expect(@registration_store.all.length).to eq(1)
       @registration_store.del(@user_ids[0])
       expect(@registration_store.all.length).to eq(0)
+      expect(@registration_store.redis.lpop('old')).to eq(@user_ids[0])
     end
 
     it "can tell when it contains a specific ID" do

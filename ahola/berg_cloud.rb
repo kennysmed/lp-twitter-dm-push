@@ -5,7 +5,7 @@ require 'em-http/middleware/oauth'
 require 'erb'
 
 class Ahola::BergCloud
-  attr_accessor :subscription_store, :registration_store, :twitter_store, :event_store, :emitting_timer_seconds
+  attr_accessor :subscription_store, :registration_store, :twitter_store, :event_store, :background, :emitting_timer_seconds
 
   def initialize
     @event_store = Ahola::Store::Event.new
@@ -86,7 +86,8 @@ class Ahola::BergCloud
           # This user has unsubscribed, so we must remove their registration.
           log("Deleting registration")
           registration_store.del(id)
-          twitter_store.del_by_id(id)
+          # Don't remove from twitter_store yet, because we'll need the twitter
+          # ID to remove them from the stream.
         end
       end
       http.errback do

@@ -107,17 +107,35 @@ describe "Background" do
 
   it "polls registrations" do
     uuid = ::UUID.generate
+    twitter_id = 12345
     redis = double('redis')
     blpop = double('redis_blpop')
 
     expect(@background).to receive(:em_redis).and_return(redis)
     expect(redis).to receive(:blpop).with('ahola:new', 0).and_return(blpop)
     expect(blpop).to receive(:callback).and_yield([], uuid)
-    expect(@background.twitter_store).to receive(:get_twitter_id).with(uuid).and_return(123456)
-    expect(@background).to receive(:add_user).with(123456)
+    expect(@background.twitter_store).to receive(:get_twitter_id).with(uuid).and_return(twitter_id)
+    expect(@background).to receive(:add_user).with(twitter_id)
 
     # TODO: Test the EventMachine.next_tick{poll_registrations} bit
     @background.poll_registrations
+  end
+
+  it "polls deregistrations" do
+    uuid = ::UUID.generate
+    redis = double('redis')
+    blpop = double('redis_blpop')
+
+    expect(@background).to receive(:em_redis).and_return(redis)
+    expect(redis).to receive(:blpop).with('ahola:old', 0).and_return(blpop)
+    expect(blpop).to receive(:callback).and_yield([], uuid)
+    expect(@background.twitter_store).to receive(:get_twitter_id).with(uuid).and_return(twitter_id)
+    expect(@background).to receive(:remove_user).with(twitter_id)
+    expect(@background.twitter_store).to receive(:del_by_id).with(uuid)
+
+
+    # TODO: Test the EventMachine.next_tick{poll_registrations} bit
+    @background.poll_deregistrations
   end
 
   describe "with several clients" do

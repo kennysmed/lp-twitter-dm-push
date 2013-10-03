@@ -22,6 +22,7 @@ EM.run do
 
   processor.start
   processor.poll_registrations
+  processor.poll_deregistrations
   processor.start_emitting_events
 
   if config[:base_url]

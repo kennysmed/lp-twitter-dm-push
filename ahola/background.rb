@@ -102,6 +102,7 @@ class Ahola::Background
   end
 
 
+  # When there are new registrations in the 'new' list, add to the stream.
   def poll_registrations
     log("Polling registrations")
     em_redis.blpop('ahola:new', 0).callback do |list, new_id|
@@ -110,6 +111,21 @@ class Ahola::Background
       end
       EventMachine.next_tick {
         poll_registrations
+      }
+    end
+  end
+
+
+  # When there are new deregistrations (a user has unsubbed), remove from stream.
+  def poll_deregistrations
+    log("Polling deregistrations")
+    em_redis.blpop('ahola:old', 0).callback do |list, old_id|
+      if twitter_id = twitter_store.get_twitter_id(old_id)
+        remove_user(twitter_id)
+        twitter_store.del_by_id(old_id)
+      end
+      EventMachine.next_tick {
+        poll_deregistrations
       }
     end
   end
@@ -137,6 +153,7 @@ class Ahola::Background
 
 
   def remove_user(twitter_id)
+    log("TODO: Removing Twitter ID #{twitter_id}")
     # TODO: How do we know which stream to remove them from?
   end
 

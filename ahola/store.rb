@@ -99,6 +99,8 @@ module Ahola
     class Registration < RedisBase
       def add(id)
         redis.sadd('registrations', id)
+        # This is a queue of new registrations that need to be added to the
+        # Twitter stream.
         redis.lpush('new', id)
       end
 
@@ -112,6 +114,9 @@ module Ahola
 
       def del(id)
         redis.srem('registrations', id)
+        # This is a queue of people who we know have unsubscribed from the
+        # publication, and who we need to remove from the Twitter stream.
+        redis.lpush('old', id)
       end
 
       def contains(id)
