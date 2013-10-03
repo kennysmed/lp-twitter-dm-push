@@ -136,12 +136,12 @@ describe "BERG Cloud" do
 
 
     it "gets data from the subscription store" do
-      @berg_cloud.subscription_store.should_receive('get').with(@user_id)
+      expect(@berg_cloud.subscription_store).to receive('get').with(@user_id)
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
     it "uses the message template" do
-      @berg_cloud.should_receive('message_template')
+      expect(@berg_cloud).to receive('message_template')
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
@@ -152,7 +152,7 @@ describe "BERG Cloud" do
       @http.stub(:errback)
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
 
-      @berg_cloud.should_receive(:post_request).with(@endpoint, "<p>Test message</p>")
+      expect(@berg_cloud).to receive(:post_request).with(@endpoint, "<p>Test message</p>")
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
@@ -163,8 +163,8 @@ describe "BERG Cloud" do
       @http.stub(:errback).and_yield()
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
       
-      @berg_cloud.registration_store.should_not_receive(:del)
-      @berg_cloud.twitter_store.should_not_receive(:del_by_id)
+      expect(@berg_cloud.registration_store).to_not receive(:del)
+      expect(@berg_cloud.twitter_store).to_not receive(:del_by_id)
       @berg_cloud.print_message(@user_id, @direct_message)
     end
 
@@ -175,8 +175,8 @@ describe "BERG Cloud" do
       @http.stub(:errback)
       @berg_cloud.stub(:post_request).with(@endpoint, "<p>Test message</p>").and_return(@http)
 
-      @berg_cloud.registration_store.should_receive(:del).with(@user_id)
-      @berg_cloud.twitter_store.should_receive(:del_by_id).with(@user_id)
+      expect(@berg_cloud.registration_store).to receive(:del).with(@user_id)
+      expect(@berg_cloud.twitter_store).to receive(:del_by_id).with(@user_id)
       @berg_cloud.print_message(@user_id, @direct_message)
     end
   end
