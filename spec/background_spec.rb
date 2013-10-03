@@ -51,10 +51,10 @@ describe "Background" do
 
     client_control = double('client_control')
     expect(client).to receive(:control).exactly(extras.length).times.and_return(client_control)
-    expect(client_control).to receive(:add_user).exactly(extras.length).times.and_return {extras.shift}
+    expect(client_control).to receive(:add_user).exactly(extras.length).times.and_return(extras.shift)
 
     expectation = EventMachine.should_receive(:add_periodic_timer)
-    extras.each { expectation.and_yield }
+    (0..extras.length).each { expectation.and_yield }
 
     @background.add_first_users_to_stream(client, twitter_ids)
   end
@@ -105,8 +105,19 @@ describe "Background" do
     expect(@background.new_client).to be_an_instance_of(::TweetStream::Client)
   end
 
-  # TODO: Don't know how to test the Event Machine stuff.
   it "polls registrations" do
+    uuid = ::UUID.generate
+    redis = double('redis')
+    blpop = double('redis_blpop')
+
+    expect(@background).to receive(:em_redis).and_return(redis)
+    expect(redis).to receive(:blpop).with('ahola:new', 0).and_return(blpop)
+    expect(blpop).to receive(:callback).and_yield([], uuid)
+    expect(@background.twitter_store).to receive(:get_twitter_id).with(uuid).and_return(123456)
+    expect(@background).to receive(:add_user).with(123456)
+
+    # TODO: Test the EventMachine.next_tick{poll_registrations} bit
+    @background.poll_registrations
   end
 
   describe "with several clients" do

@@ -108,7 +108,9 @@ class Ahola::Background
       if twitter_id = twitter_store.get_twitter_id(new_id)
         add_user(twitter_id)
       end
-      EventMachine.next_tick { poll_registrations }
+      EventMachine.next_tick {
+        poll_registrations
+      }
     end
   end
 
