@@ -14,5 +14,6 @@ gem 'simple_oauth'
 gem 'sinatra'
 gem 'thin'
 gem "tweetstream", "~> 2.5.0"
+gem 'em-twitter', :git => 'https://github.com/tweetstream/em-twitter.git'
 gem 'uuid'
 gem 'webmock'
