@@ -53,6 +53,9 @@ describe "Background" do
     expect(client).to receive(:control).exactly(extras.length).times.and_return(client_control)
     expect(client_control).to receive(:add_user).exactly(extras.length).times.and_return {extras.shift}
 
+    expectation = EventMachine.should_receive(:add_periodic_timer)
+    extras.each { expectation.and_yield }
+
     @background.add_first_users_to_stream(client, twitter_ids)
   end
 

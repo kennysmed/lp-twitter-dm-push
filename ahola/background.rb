@@ -69,6 +69,7 @@ class Ahola::Background
   def add_first_users_to_stream(client, twitter_ids)
     log("Adding #{twitter_ids.length} users to stream")
 
+    # We can add up to 100 users when we first create the stream.
     client.sitestream(twitter_ids.slice!(0,100)) do |hash|
       if hash[:message][:direct_message]
         # We get DMs the user has both sent and received.
@@ -80,8 +81,14 @@ class Ahola::Background
       end
     end
 
-    twitter_ids.each do |id|
-      add_user_to_client(client, id)
+    # Users 101-1000 must be added invidiually.
+    # We can only add up to 25 extra users per second to a stream.
+    timer = EventMachine.add_periodic_timer(0.04) do
+      if id = twitter_ids.shift
+        add_user_to_client(client, id)
+      else
+        timer.cancel
+      end
     end
 
     return client
