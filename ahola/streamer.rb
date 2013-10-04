@@ -48,7 +48,7 @@ class Ahola::Streamer
     log("Starting Site Streams")
 
     while twitter_ids.length > 0 do
-      start_new_stream( twitter_ids.slice!(0,max_users_per_stream) )
+      start_new_stream( twitter_ids.slice!(0, max_users_per_stream) )
     end
   end
 
@@ -58,6 +58,7 @@ class Ahola::Streamer
 
     client = new_client
     client_id = new_client_id
+    self.latest_client_id = client_id
 
     clients[client_id] = add_first_users_to_stream(client, twitter_ids)
   end
@@ -159,8 +160,6 @@ class Ahola::Streamer
     else
       new_id = 1
     end
-
-    latest_client = new_id
 
     return new_id
   end
