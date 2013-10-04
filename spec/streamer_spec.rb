@@ -98,13 +98,15 @@ describe "Streamer" do
   describe "with several clients" do
     before :each do
       @streamer.latest_client_id = 4
-      client = double('client')
-      client_control = double('client_control')
-      client.stub(:control).and_return(client_control)
-      (1..@streamer.latest_client_id).each do |n|
+      # Add four different clients to @streamer:
+      (1..4).each do |id|
+        # This ensures they're different objects:
+        client = double('client'+id.to_s)
+        client_control = double('client_control')
+        client.stub(:control).and_return(client_control)
         # A fake method, so we can confirm which client is which.
-        client.stub(:id) { n }
-        @streamer.clients[n] = client
+        client.stub(:id) { id }
+        @streamer.clients[id] = client
       end
     end
 
@@ -112,16 +114,12 @@ describe "Streamer" do
       expect(@streamer.latest_client.id).to eq(@streamer.latest_client_id) 
     end
 
-    # TODO: This isn't actually checking the correct client has been received
-    # by add_user_to_client().
     it "adds a user to the latest client" do
       client = @streamer.clients[4]
       expect(@streamer).to receive(:add_user_to_client).with(client, @twitter_ids[0])
       @streamer.add_user(@twitter_ids[0])
     end
 
-    # TODO: This isn't actually checking the correct client has been received
-    # by add_user_to_client().
     it "adds a user to a supplied client" do
       client = @streamer.clients[4]
       expect(client.control).to receive(:add_user).with(@twitter_ids[0])
@@ -151,7 +149,6 @@ describe "Streamer" do
       end
     end
 
-    # TODO: Doesn't seem to matter which client[n] we use in the expect block.
     it "removes a user from the correct client" do
       @streamer.accounts[@twitter_ids[0]] = 3
       expect(@streamer.clients[3]).to receive(:remove_user).with(@twitter_ids[0])
