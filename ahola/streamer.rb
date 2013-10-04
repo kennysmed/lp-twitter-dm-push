@@ -118,14 +118,14 @@ class Ahola::Streamer
 
   
   def remove_user(twitter_id)
-    if client = client_for_id(twitter_id)
+    if client = client_for_twitter_id(twitter_id)
       log("Removing Twitter ID #{twitter_id}")
       client.remove_user(twitter_id)
     end
   end
 
 
-  def client_for_id(twitter_id)
+  def client_for_twitter_id(twitter_id)
     if client_id = accounts[twitter_id]
       if clients[client_id]
         return clients[client_id]
