@@ -66,7 +66,7 @@ module TwitterPush
           # We only want the ones they've received.
           if hash[:for_user] == hash[:message][:direct_message][:recipient_id]
             bergcloud.direct_message(
-                          ::Twitter::DirectMessage.new(hash[:message][:direct_message]))
+                    ::Twitter::DirectMessage.new(hash[:message][:direct_message]))
           end
         end
       end
