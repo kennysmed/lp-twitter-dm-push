@@ -3,22 +3,22 @@ $stdout.sync = true
 
 require 'thin'
 require 'eventmachine'
-require 'twitstream/config'
-require 'twitstream/frontend'
-require 'twitstream/background'
+require 'twitterpush/config'
+require 'twitterpush/frontend'
+require 'twitterpush/background'
 require 'em-http'
 
 require 'active_support/core_ext/numeric/time'
 require 'active_support/core_ext/time/calculations'
 
-processor = Twitstream::Background.new
-config = Twitstream::Config.new
+processor = TwitterPush::Background.new
+config = TwitterPush::Config.new
 
 EM.run do
   server  = 'thin'
   host    = '0.0.0.0'
   port    = ENV['PORT'] || '5000'
-  web_app = Twitstream::Frontend.new
+  web_app = TwitterPush::Frontend.new
 
   processor.start
   processor.poll_registrations

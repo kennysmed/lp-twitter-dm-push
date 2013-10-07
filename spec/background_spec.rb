@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'twitstream/background'
+require 'twitterpush/background'
 require 'uuid'
 require 'tweetstream'
 require 'tweetstream/site_stream_client'
@@ -14,9 +14,9 @@ describe "Background" do
   end
 
   before :each do
-    @background = Twitstream::Background.new
+    @background = TwitterPush::Background.new
     # Start with an empty database for each test.
-    redis = Twitstream::Store::RedisBase.new
+    redis = TwitterPush::Store::RedisBase.new
     redis.flushdb
     @background.twitter_store.store(@user_ids[0], @twitter_ids[0])
     @background.twitter_store.store(@user_ids[1], @twitter_ids[1])
@@ -34,7 +34,7 @@ describe "Background" do
     blpop = double('redis_blpop')
 
     expect(@background).to receive(:em_redis).and_return(redis)
-    expect(redis).to receive(:blpop).with('twitstream:new', 0).and_return(blpop)
+    expect(redis).to receive(:blpop).with('twitterpush:new', 0).and_return(blpop)
     expect(blpop).to receive(:callback).and_yield([], uuid)
     expect(@background.twitter_store).to receive(:get_twitter_id).with(uuid).and_return(twitter_id)
     expect(@background.streamer).to receive(:add_user).with(twitter_id)
@@ -50,7 +50,7 @@ describe "Background" do
     blpop = double('redis_blpop')
 
     expect(@background).to receive(:em_redis).and_return(redis)
-    expect(redis).to receive(:blpop).with('twitstream:old', 0).and_return(blpop)
+    expect(redis).to receive(:blpop).with('twitterpush:old', 0).and_return(blpop)
     expect(blpop).to receive(:callback).and_yield([], uuid)
     expect(@background.twitter_store).to receive(:get_twitter_id).with(uuid).and_return(twitter_id)
     expect(@background.streamer).to receive(:remove_user).with(twitter_id)

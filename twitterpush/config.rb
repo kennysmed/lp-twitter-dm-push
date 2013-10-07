@@ -1,6 +1,7 @@
 require 'yaml'
 
-module Twitstream 
+
+module TwitterPush
   class Config
 
     def config

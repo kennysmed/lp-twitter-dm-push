@@ -3,7 +3,7 @@
 # a user.
 
 $LOAD_PATH.unshift(File.dirname(__FILE__)+'/../')
-require 'twitstream/twitter'
+require 'twitterpush/twitter'
 require 'eventmachine'
 require 'tweetstream'
 require 'yaml'

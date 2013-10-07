@@ -1,11 +1,11 @@
 require 'spec_helper'
-require 'twitstream/config'
+require 'twitterpush/config'
 
 
 describe "Config" do
 
   before :all do
-    @config = Twitstream::Config.new
+    @config = TwitterPush::Config.new
   end
 
   it "returns config settings" do

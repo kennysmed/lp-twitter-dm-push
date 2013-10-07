@@ -1,4 +1,4 @@
-module Twitstream
+module TwitterPush
   module FrontendHelpers
     def format_title
       "Little Printer Twitter Direct Message Publication"

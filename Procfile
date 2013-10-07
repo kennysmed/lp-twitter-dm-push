@@ -1,1 +1,1 @@
-web: bundle exec ruby twitstream.rb
+web: bundle exec ruby twitterpush.rb

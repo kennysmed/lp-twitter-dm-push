@@ -1,10 +1,11 @@
-require 'twitstream/config'
+require 'twitterpush/base'
 require 'redis'
 require 'redis-namespace'
 
-module Twitstream 
+
+module TwitterPush 
   module Store
-    class RedisBase
+    class RedisBase < TwitterPush::Base
       attr_accessor :redis
 
       def initialize
@@ -20,22 +21,12 @@ module Twitstream
             redis = ::Redis.new(:db => 0)
           end
         end
-        @redis = ::Redis::Namespace.new(:twitstream, :redis => redis)
-      end
-
-      def config
-        @config ||= Twitstream::Config.new
+        @redis = ::Redis::Namespace.new(:twitterpush, :redis => redis)
       end
 
       # Empties everything from this database, so be careful!
       def flushdb
         @redis.flushdb
-      end
-
-      def log(str)
-        if ENV['RACK_ENV'] != 'test'
-          puts str
-        end
       end
     end
 

@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'twitstream/frontend_helpers'
+require 'twitterpush/frontend_helpers'
 
 class TestHelpers
-  include Twitstream::FrontendHelpers
+  include TwitterPush::FrontendHelpers
 end
 
 

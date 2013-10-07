@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'twitstream/berg_cloud'
+require 'twitterpush/berg_cloud'
 require 'em-rspec'
 require 'uuid'
 require 'webmock/rspec'
@@ -15,20 +15,20 @@ describe "BERG Cloud" do
   end
 
   before :each do
-    @berg_cloud = Twitstream::BergCloud.new
+    @berg_cloud = TwitterPush::BergCloud.new
     stub_request(:any, @endpoint)
   end
 
   it "has a subscription_store" do
-    expect(@berg_cloud.subscription_store).to be_an_instance_of(Twitstream::Store::Subscription)
+    expect(@berg_cloud.subscription_store).to be_an_instance_of(TwitterPush::Store::Subscription)
   end
 
   it "has a registration_store" do
-    expect(@berg_cloud.registration_store).to be_an_instance_of(Twitstream::Store::Registration)
+    expect(@berg_cloud.registration_store).to be_an_instance_of(TwitterPush::Store::Registration)
   end
 
   it "has an event_store" do
-    expect(@berg_cloud.event_store).to be_an_instance_of(Twitstream::Store::Event)
+    expect(@berg_cloud.event_store).to be_an_instance_of(TwitterPush::Store::Event)
   end
 
   describe "request" do
@@ -85,13 +85,13 @@ describe "BERG Cloud" do
 
     it "sends a message to event store" do
       user_id = ::UUID.generate
-      Twitstream::Store::Event.stub(:direct_message!).with(@direct_message).and_return(1)
+      TwitterPush::Store::Event.stub(:direct_message!).with(@direct_message).and_return(1)
       @berg_cloud.twitter_store.stub(:get_id).with(@direct_message.recipient.id).and_return(user_id)
       expect(@berg_cloud.direct_message(@direct_message)).to eq(1)
     end
 
     it "does nothing when the message is for no user" do
-      Twitstream::Store::Event.stub(:direct_message!).with(@direct_message).and_return(1)
+      TwitterPush::Store::Event.stub(:direct_message!).with(@direct_message).and_return(1)
       @berg_cloud.twitter_store.stub(:get_id).with(@direct_message.recipient.id).and_return(nil)
       expect(@berg_cloud.direct_message(@direct_message)).to eq(nil)
     end

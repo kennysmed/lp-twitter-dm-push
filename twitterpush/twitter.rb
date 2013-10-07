@@ -1,12 +1,13 @@
-require 'twitstream/config'
 require 'oauth'
 require 'tweetstream'
+require 'twitterpush/config'
 
-module Twitstream 
+
+module TwitterPush
   class Twitter
 
     def self.config
-      @config ||= Twitstream::Config.new
+      @config ||= TwitterPush::Config.new
     end
 
     def self.consumer
@@ -25,5 +26,6 @@ module Twitstream
         :auth_method => :oauth
       )
     end
+
   end
 end

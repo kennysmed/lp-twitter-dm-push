@@ -2,27 +2,28 @@ require 'json'
 require 'uuid'
 require 'uri'
 require 'sinatra/base'
-require 'twitstream/config'
-require 'twitstream/frontend_helpers'
-require 'twitstream/store'
-require 'twitstream/twitter'
+require 'twitterpush/config'
+require 'twitterpush/frontend_helpers'
+require 'twitterpush/store'
+require 'twitterpush/twitter'
 
-module Twitstream
+
+module TwitterPush
   class Frontend < Sinatra::Base
     configure :production, :development do
       enable :logging
     end
 
-    helpers Twitstream::FrontendHelpers
+    helpers TwitterPush::FrontendHelpers
 
     set :sessions, true
     set :bind, '0.0.0.0'
     set :public_folder, 'public'
 
-    token_store = Twitstream::Store::Token.new
-    subscription_store = Twitstream::Store::Subscription.new
-    registration_store = Twitstream::Store::Registration.new
-    twitter_store = Twitstream::Store::Twitter.new
+    token_store = TwitterPush::Store::Token.new
+    subscription_store = TwitterPush::Store::Subscription.new
+    registration_store = TwitterPush::Store::Registration.new
+    twitter_store = TwitterPush::Store::Twitter.new
     
     get '/' do
       format_title
@@ -41,7 +42,7 @@ module Twitstream
                                           params[:return_url], params[:error_url])
     
       id = ::UUID.generate
-      consumer = Twitstream::Twitter.consumer
+      consumer = TwitterPush::Twitter.consumer
       query = ::URI.encode_www_form(:id => id,
                                     :return_url => return_url,
                                     :error_url => error_url)
@@ -66,7 +67,7 @@ module Twitstream
       end
 
       id = params[:id]
-      consumer = Twitstream::Twitter.consumer
+      consumer = TwitterPush::Twitter.consumer
 
       begin
         if request_token = token_store.get(:request_token, id, consumer)
@@ -117,7 +118,7 @@ module Twitstream
         errors << "No ID supplied in config data"
       end
 
-      if access_token = token_store.get(:access_token, id, Twitstream::Twitter.consumer)
+      if access_token = token_store.get(:access_token, id, TwitterPush::Twitter.consumer)
         subscription_store.store(id, subscription_id, endpoint)
         registration_store.add(id)
       else
@@ -149,7 +150,7 @@ module Twitstream
             :text => "How long are you in town for?\nHow about lunch tomorrow?",
           }]
 
-      config = Twitstream::Config.new
+      config = TwitterPush::Config.new
 
       etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
       content_type 'text/html; charset=utf-8'
