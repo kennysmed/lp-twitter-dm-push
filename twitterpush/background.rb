@@ -1,13 +1,3 @@
-
-# TODO:
-#
-# * How do we get notified a user has de-authed with our app? 
-#   * If we do get notified, then we'll need to remove a user from a stream.
-#   * In which case we need to map twitter_id => stream.
-# * Change TwitterPush::Twitter.tweetstream to be .client and use app's token and secret.
-#
-# Need to ensure a user can only associate one twitter account with one LP.
-
 require 'twitterpush/base'
 require 'twitterpush/store'
 require 'twitterpush/streamer'
