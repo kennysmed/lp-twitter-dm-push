@@ -2,7 +2,7 @@
     "owner_email" : "publishers@bergcloud.com",
     "publication_api_version":"1.0",
     "name": "Twitter Direct Messages",
-    "description": "Any Direct Messages sent to your Twitter account will appear on your Little Printer.",
+    "description": "Any Direct Messages sent to your Twitter account will be delivered by your Little Printer.",
     "delivered_on": "every day",
     "delivery_type": "push",
     "send_timezone_info": false,
