@@ -1,6 +1,6 @@
-require 'ahola/config'
-require 'ahola/twitter'
-require 'ahola/berg_cloud'
+require 'twitstream/config'
+require 'twitstream/twitter'
+require 'twitstream/berg_cloud'
 
 
 # A wrapper for handling Twitter Site Streams. Starting them, adding and
@@ -8,11 +8,11 @@ require 'ahola/berg_cloud'
 # Partly because of the complications of only allowing 1000 users per Site
 # Stream, and so having to keep track of which user is in which stream, in case
 # we need to remove them.
-class Ahola::Streamer
+class Twitstream::Streamer
   attr_accessor :bergcloud, :clients, :accounts, :latest_client_id, :max_users_per_stream
 
   def initialize
-    @bergcloud = Ahola::BergCloud.new
+    @bergcloud = Twitstream::BergCloud.new
 
     # Will be client_id => Twitter Client
     # Where client_id is a made up number, just so we can identify which client
@@ -32,7 +32,7 @@ class Ahola::Streamer
   end
 
   def config
-    @config ||= Ahola::Config.new
+    @config ||= Twitstream::Config.new
   end
 
   def log(str)
@@ -95,7 +95,7 @@ class Ahola::Streamer
 
 
   def new_client
-    Ahola::Twitter.client
+    Twitstream::Twitter.client
   end
 
 

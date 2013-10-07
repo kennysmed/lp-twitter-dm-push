@@ -1,11 +1,11 @@
 require 'spec_helper'
-require 'ahola/config'
+require 'twitstream/config'
 
 
 describe "Config" do
 
   before :all do
-    @config = Ahola::Config.new
+    @config = Twitstream::Config.new
   end
 
   it "returns config settings" do

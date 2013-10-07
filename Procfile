@@ -1,1 +1,1 @@
-web: bundle exec ruby ahola.rb
+web: bundle exec ruby twitstream.rb

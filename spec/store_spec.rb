@@ -1,6 +1,6 @@
 require 'spec_helper'
-require 'ahola/store'
-require 'ahola/twitter'
+require 'twitstream/store'
+require 'twitstream/twitter'
 require 'twitter'
 require 'uuid'
 
@@ -13,14 +13,14 @@ describe "Store" do
 
   before :each do
     # Start with an empty database for each test.
-    redis = Ahola::Store::RedisBase.new
+    redis = Twitstream::Store::RedisBase.new
     redis.flushdb
     @user_ids = [::UUID.generate, ::UUID.generate]
   end
 
   describe "Event" do
     before :each do
-      @event_store = Ahola::Store::Event.new
+      @event_store = Twitstream::Store::Event.new
     end
 
     it "stores a direct message" do
@@ -67,7 +67,7 @@ describe "Store" do
 
   describe "Registration" do
     before :each do
-      @registration_store = Ahola::Store::Registration.new
+      @registration_store = Twitstream::Store::Registration.new
     end
 
     it "adds to 'registrations' and 'new'" do
@@ -120,7 +120,7 @@ describe "Store" do
 
   describe "Subscription" do
     before :each do
-      @subscription_store = Ahola::Store::Subscription.new
+      @subscription_store = Twitstream::Store::Subscription.new
       @subscription_id = '2ca7287d935ae2a6a562a3a17bdddcbe81e79d43'
       @endpoint = "http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e79d43/publish"
     end
@@ -141,10 +141,10 @@ describe "Store" do
   end
 
   describe "Token" do
-    # This does assume that Ahola::Twitter works OK.
+    # This does assume that Twitstream::Twitter works OK.
 
     before :each do
-      @token_store = Ahola::Store::Token.new
+      @token_store = Twitstream::Store::Token.new
       @oauth_token = 'NPcudxy0yU5T3tBzho7iCotZ3cnetKwcTIRlX0iwRl0'
       @oauth_token_secret = 'veNRnAWe6inFuo8o2u8SLLZLjolYDmDP7SzL0YfYI'
     end
@@ -180,7 +180,7 @@ describe "Store" do
       end
 
       it "gets a token object" do
-        token = @token_store.get(:request_token, @user_ids[0], Ahola::Twitter.consumer)
+        token = @token_store.get(:request_token, @user_ids[0], Twitstream::Twitter.consumer)
         expect(token).to be_an_instance_of(OAuth::RequestToken)
         expect(token.token).to eq(@oauth_token)
         expect(token.secret).to eq(@oauth_token_secret)
@@ -220,7 +220,7 @@ describe "Store" do
       end
 
       it "gets a token object" do
-        token = @token_store.get(:access_token, @user_ids[0], Ahola::Twitter.consumer)
+        token = @token_store.get(:access_token, @user_ids[0], Twitstream::Twitter.consumer)
         expect(token).to be_an_instance_of(OAuth::AccessToken)
         expect(token.token).to eq(@oauth_token)
         expect(token.secret).to eq(@oauth_token_secret)
@@ -231,7 +231,7 @@ describe "Store" do
   describe "Twitter" do
 
     before :each do
-      @twitter_store = Ahola::Store::Twitter.new
+      @twitter_store = Twitstream::Store::Twitter.new
       @twitter_id = 10765432100123456789
       @uuid = @user_ids[0]
     end

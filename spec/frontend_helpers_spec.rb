@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'ahola/frontend_helpers'
+require 'twitstream/frontend_helpers'
 
 class TestHelpers
-  include Ahola::FrontendHelpers
+  include Twitstream::FrontendHelpers
 end
 
 

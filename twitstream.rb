@@ -3,22 +3,22 @@ $stdout.sync = true
 
 require 'thin'
 require 'eventmachine'
-require 'ahola/config'
-require 'ahola/frontend'
-require 'ahola/background'
+require 'twitstream/config'
+require 'twitstream/frontend'
+require 'twitstream/background'
 require 'em-http'
 
 require 'active_support/core_ext/numeric/time'
 require 'active_support/core_ext/time/calculations'
 
-processor = Ahola::Background.new
-config = Ahola::Config.new
+processor = Twitstream::Background.new
+config = Twitstream::Config.new
 
 EM.run do
   server  = 'thin'
   host    = '0.0.0.0'
   port    = ENV['PORT'] || '5000'
-  web_app = Ahola::Frontend.new
+  web_app = Twitstream::Frontend.new
 
   processor.start
   processor.poll_registrations

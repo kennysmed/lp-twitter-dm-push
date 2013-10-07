@@ -2,27 +2,27 @@ require 'json'
 require 'uuid'
 require 'uri'
 require 'sinatra/base'
-require 'ahola/config'
-require 'ahola/frontend_helpers'
-require 'ahola/store'
-require 'ahola/twitter'
+require 'twitstream/config'
+require 'twitstream/frontend_helpers'
+require 'twitstream/store'
+require 'twitstream/twitter'
 
-module Ahola
+module Twitstream
   class Frontend < Sinatra::Base
     configure :production, :development do
       enable :logging
     end
 
-    helpers Ahola::FrontendHelpers
+    helpers Twitstream::FrontendHelpers
 
     set :sessions, true
     set :bind, '0.0.0.0'
     set :public_folder, 'public'
 
-    token_store = Ahola::Store::Token.new
-    subscription_store = Ahola::Store::Subscription.new
-    registration_store = Ahola::Store::Registration.new
-    twitter_store = Ahola::Store::Twitter.new
+    token_store = Twitstream::Store::Token.new
+    subscription_store = Twitstream::Store::Subscription.new
+    registration_store = Twitstream::Store::Registration.new
+    twitter_store = Twitstream::Store::Twitter.new
     
     get '/' do
       format_title
@@ -41,7 +41,7 @@ module Ahola
                                           params[:return_url], params[:error_url])
     
       id = ::UUID.generate
-      consumer = Ahola::Twitter.consumer
+      consumer = Twitstream::Twitter.consumer
       query = ::URI.encode_www_form(:id => id,
                                     :return_url => return_url,
                                     :error_url => error_url)
@@ -66,7 +66,7 @@ module Ahola
       end
 
       id = params[:id]
-      consumer = Ahola::Twitter.consumer
+      consumer = Twitstream::Twitter.consumer
 
       begin
         if request_token = token_store.get(:request_token, id, consumer)
@@ -117,7 +117,7 @@ module Ahola
         errors << "No ID supplied in config data"
       end
 
-      if access_token = token_store.get(:access_token, id, Ahola::Twitter.consumer)
+      if access_token = token_store.get(:access_token, id, Twitstream::Twitter.consumer)
         subscription_store.store(id, subscription_id, endpoint)
         registration_store.add(id)
       else
@@ -149,7 +149,7 @@ module Ahola
             :text => "How long are you in town for?\nHow about lunch tomorrow?",
           }]
 
-      config = Ahola::Config.new
+      config = Twitstream::Config.new
 
       etag Digest::MD5.hexdigest('sample' + Date.today.strftime('%d%m%Y'))
       content_type 'text/html; charset=utf-8'

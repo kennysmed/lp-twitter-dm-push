@@ -1,6 +1,6 @@
 require 'yaml'
 
-module Ahola
+module Twitstream 
   class Config
 
     def config

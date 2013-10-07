@@ -1,17 +1,17 @@
-require 'ahola/config'
-require 'ahola/store'
+require 'twitstream/config'
+require 'twitstream/store'
 require 'em-http'
 require 'em-http/middleware/oauth'
 require 'erb'
 
-class Ahola::BergCloud
+class Twitstream::BergCloud
   attr_accessor :subscription_store, :registration_store, :twitter_store, :event_store, :background, :emitting_timer_seconds
 
   def initialize
-    @event_store = Ahola::Store::Event.new
-    @registration_store = Ahola::Store::Registration.new
-    @subscription_store = Ahola::Store::Subscription.new
-    @twitter_store = Ahola::Store::Twitter.new
+    @event_store = Twitstream::Store::Event.new
+    @registration_store = Twitstream::Store::Registration.new
+    @subscription_store = Twitstream::Store::Subscription.new
+    @twitter_store = Twitstream::Store::Twitter.new
 
     # How frequently we do the emitting of direct messages.
     # It's here mainly so we can set it to a small amount when testing.
@@ -19,7 +19,7 @@ class Ahola::BergCloud
   end
 
   def config
-    @config ||= Ahola::Config.new
+    @config ||= Twitstream::Config.new
   end
 
   def log(str)

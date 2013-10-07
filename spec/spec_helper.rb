@@ -1,7 +1,7 @@
 ENV["RACK_ENV"] = "test"
 $LOAD_PATH.unshift(File.dirname(__FILE__) + "/..")
 
-require 'ahola/frontend_helpers'
+require 'twitstream/frontend_helpers'
 require 'rspec'
 require 'rack/test'
 require 'twitter'
@@ -9,7 +9,7 @@ require 'twitter'
 RSpec.configure do |config|
   config.color_enabled = true
  	config.include Rack::Test::Methods
-  config.include Ahola::FrontendHelpers
+  config.include Twitstream::FrontendHelpers
 
   # Force it to only accept the Rspec 2 Expect syntax.
   config.expect_with :rspec do |c|

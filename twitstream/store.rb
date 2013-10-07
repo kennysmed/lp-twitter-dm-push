@@ -1,8 +1,8 @@
-require 'ahola/config'
+require 'twitstream/config'
 require 'redis'
 require 'redis-namespace'
 
-module Ahola
+module Twitstream 
   module Store
     class RedisBase
       attr_accessor :redis
@@ -20,11 +20,11 @@ module Ahola
             redis = ::Redis.new(:db => 0)
           end
         end
-        @redis = ::Redis::Namespace.new(:ahola, :redis => redis)
+        @redis = ::Redis::Namespace.new(:twitstream, :redis => redis)
       end
 
       def config
-        @config ||= Ahola::Config.new
+        @config ||= Twitstream::Config.new
       end
 
       # Empties everything from this database, so be careful!

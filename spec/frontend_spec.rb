@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'timecop'
-require 'ahola/frontend'
+require 'twitstream/frontend'
 require 'uuid'
 
 describe "Frontend" do
   def app
-    Ahola::Frontend
+    Twitstream::Frontend
   end
 
   before :all do
@@ -131,14 +131,14 @@ describe "Frontend" do
 
     it "stores the request token" do
       ::UUID.stub(:generate).and_return(@user_id)
-      consumer = Ahola::Twitter.consumer
-      token_store = Ahola::Store::Token.new
+      consumer = Twitstream::Twitter.consumer
+      token_store = Twitstream::Store::Token.new
       token_store.redis.hset(:request_token, @user_id, Marshal.dump(['testtoken', 'testsecret']))
       expect(token_store.get(:request_token, @user_id, consumer)).to be_an_instance_of(OAuth::RequestToken)
     end
 
     #it "requires valid Twitter API credentials" do
-      #Ahola::Twitter.stub(:consumer).and_return(OAuth::Consumer.new(
+      #Twitstream::Twitter.stub(:consumer).and_return(OAuth::Consumer.new(
                             #'bad', 'creds', :site => 'https://api.twitter.com'))
       #get @configure_url
       #expect(last_response.headers['Location']).to eq(@error_url) 
@@ -189,8 +189,8 @@ describe "Frontend" do
     # TODO
     # Can't work out how to do this either.
     #it "deletes the request_token from the store" do
-      #consumer = Ahola::Twitter.consumer
-      #token_store = Ahola::Store::Token.new
+      #consumer = Twitstream::Twitter.consumer
+      #token_store = Twitstream::Store::Token.new
       #request_token = OAuth::RequestToken.new(consumer, 'mytoken', 'mysecret')
       #token_store.store(:request_token, @user_id, request_token)
 
@@ -232,8 +232,8 @@ describe "Frontend" do
         :endpoint => "http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e",
       }
       # Store a fake access_token so that things work for @user_id:
-      token_store = Ahola::Store::Token.new
-      token_store.store(:access_token, @user_id, OAuth::RequestToken.new(Ahola::Twitter.consumer, 'test_token', 'test_secret'))
+      token_store = Twitstream::Store::Token.new
+      token_store.store(:access_token, @user_id, OAuth::RequestToken.new(Twitstream::Twitter.consumer, 'test_token', 'test_secret'))
     end
 
     it "returns true with valid data" do
@@ -278,14 +278,14 @@ describe "Frontend" do
 
     it "stores a new subscription" do
       post "/validate_config/", @post_args
-      subs = Ahola::Store::Subscription.new.get(@user_id)
+      subs = Twitstream::Store::Subscription.new.get(@user_id)
       expect(subs[0]).to eq('2ca7287d935ae2a6a562a3a17bdddcbe81e79d43')
       expect(subs[1]).to eq("http://api.bergcloud.com/v1/subscriptions/2ca7287d935ae2a6a562a3a17bdddcbe81e")
     end
 
     it "adds a new registration" do
       post "/validate_config/", @post_args
-      expect(Ahola::Store::Registration.new.contains(@user_id)).to be_true
+      expect(Twitstream::Store::Registration.new.contains(@user_id)).to be_true
     end
   end
 

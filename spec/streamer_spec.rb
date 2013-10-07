@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'ahola/streamer'
+require 'twitstream/streamer'
 require 'em-rspec'
 
 describe "Streamer" do
@@ -9,7 +9,7 @@ describe "Streamer" do
   end
 
   before :each do
-    @streamer = Ahola::Streamer.new
+    @streamer = Twitstream::Streamer.new
   end
 
   it "starts" do
@@ -21,11 +21,11 @@ describe "Streamer" do
   end
 
   it "starts a new stream" do
-    expect(@streamer).to receive(:new_client).and_return(Ahola::Twitter.client)
+    expect(@streamer).to receive(:new_client).and_return(Twitstream::Twitter.client)
     expect(@streamer).to receive(:new_client_id).and_return(1)
     expect(@streamer).to receive(:add_first_users_to_stream)
       .with(instance_of(::TweetStream::Client), @twitter_ids)
-      .and_return(Ahola::Twitter.client)
+      .and_return(Twitstream::Twitter.client)
     @streamer.start_new_stream(@twitter_ids.dup)
     expect(@streamer.clients[1]).to be_an_instance_of(::TweetStream::Client)
     expect(@streamer.latest_client_id).to eq(1)

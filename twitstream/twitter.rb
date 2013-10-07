@@ -1,12 +1,12 @@
-require 'ahola/config'
+require 'twitstream/config'
 require 'oauth'
 require 'tweetstream'
 
-module Ahola 
+module Twitstream 
   class Twitter
 
     def self.config
-      @config ||= Ahola::Config.new
+      @config ||= Twitstream::Config.new
     end
 
     def self.consumer
