@@ -22,7 +22,7 @@ The app can be started locally using:
 
 ## NOTE when running tests
 
-When running tests, `ENV['RACK_ENV']` is set to `test` and, if there's no `rediscloud_url` set, uses the local Redis database `2` (`0` is the default otherwise).  **Database `2` will be emptied at various points in the tests**, so don't use it for anything persistent!
+When running tests, `ENV['RACK_ENV']` is set to `test` and, if there's no `rediscloud_url` set, uses the local Redis database 2 (0 is the default otherwise).  **Database 2 will be emptied at various points in the tests**, so don't use it for anything persistent!
 
 Also, during tests, config data is read from `config.yml.test` rather than anything in `config.yml` or environment variables. Run the tests with:
 
@@ -59,7 +59,7 @@ All the settings are required unless marked optional.
     BERGCLOUD_ACCESS_TOKEN
     BERGCLOUD_ACCESS_TOKEN_SECRET
 
-Alternatively, these can all be set in a `config.yml` file at the same level as `twitterpush.rb`. All the keys should be lowercase, eg:
+Instead of setting these as environment variables, these can all be set in a `config.yml` file at the same level as `twitterpush.rb`. All the keys should be lowercase, eg:
 
 	keepalive_time: 1200
 	base_url: http://0.0.0.0:5000/
