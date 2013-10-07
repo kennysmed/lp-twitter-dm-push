@@ -147,7 +147,7 @@ module TwitterPush
               :profile_image_url => 'https://si0.twimg.com/profile_images/1167616130/james_200208_300x300_normal.jpg',
               :screen_name => 'philgyford',
             },
-            :text => "How long are you in town for?\nHow about lunch tomorrow?",
+            :text => "How long are you in town for?\nLunch tomorrow?",
           }]
 
       config = TwitterPush::Config.new
@@ -158,16 +158,5 @@ module TwitterPush
       template.result(binding)
     end
 
-    post '/pretend/:id' do
-      # [:mention, :retweet, :new_follower].each do |event|
-      #   if count = params[event]
-      #     events.event!(params[:id], event, count.to_i)
-      #   end
-      # end
-      # if params[:flourish]
-      #   Kachina::BergCloud.new.flourish!(params[:id])
-      # end
-      # halt 204
-    end
   end
 end
