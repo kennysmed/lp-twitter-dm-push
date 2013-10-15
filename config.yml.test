@@ -1,0 +1,11 @@
+keepalive_time: 1200
+base_url: http://example.org/
+bergcloud_consumer_key: abcdefghABCDEFGH12345
+bergcloud_consumer_secret: 1234567890abcdefghijklmnopqrstuvwxyzABCDEF
+bergcloud_access_token: ABCDEFGHIJKLMNOPQRST
+bergcloud_access_token_secret: 0987654321zyxwvutsrqponmlkjihgfedcbaZYXW
+twitter_consumer_key: ZYXWVUTSRQPO0987654321
+twitter_consumer_secret: zyxwvutsrqponmlkjihgfedcba0987654321ZYXWVUT
+twitter_access_token: 987654321-abcdefghijklmnopqrstuvwxz1234567890ABCDE
+twitter_access_token_secret: AaBbCcDdEeFfGgHhJjIiKkLlMmNnOoPpQqRrSsTtUuV
+
