@@ -89,6 +89,7 @@ module TwitterPush
     # Keeping a set of all the IDs who are registered with the publication.
     class Registration < RedisBase
       def add(id)
+        log "Adding registration for #{id}"
         redis.sadd('registrations', id)
         # This is a queue of new registrations that need to be added to the
         # Twitter stream.
