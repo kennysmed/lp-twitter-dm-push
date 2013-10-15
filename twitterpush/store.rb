@@ -177,6 +177,7 @@ module TwitterPush
       end
 
       def store(id, twitter_id)
+        log "Storing user #{id} (Twitter ID: #{twitter_id})"
         redis.hset(:twid, twitter_id, id)
         redis.hset(:uuid, id, twitter_id)
       end
