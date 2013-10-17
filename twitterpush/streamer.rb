@@ -45,7 +45,7 @@ module TwitterPush
 
 
     def start_new_stream(twitter_ids)
-      log("Starting new stream for #{twitter_ids.length} user(s)")
+      log("Starting new stream for #{twitter_ids.length} user(s): #{twitter_ids}")
 
       client = new_client
       client_id = new_client_id
@@ -60,7 +60,7 @@ module TwitterPush
     
     # Receives an array of up to 1000 Twitter IDs.
     def add_first_users_to_stream(client, twitter_ids)
-      log("Adding #{twitter_ids.length} users to stream")
+      log("Adding #{twitter_ids.length} user(s) to stream: #{twitter_ids}")
 
       # We can add up to 100 users when we first create the stream.
       client.sitestream(twitter_ids.slice!(0,100)) do |hash|
