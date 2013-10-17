@@ -51,7 +51,10 @@ module TwitterPush
       client_id = new_client_id
       self.latest_client_id = client_id
 
-      clients[client_id] = add_first_users_to_stream(client, twitter_ids)
+      # HACK, to pause because new clients don't have control streams.
+      EM.add_timer(5) do
+        clients[client_id] = add_first_users_to_stream(client, twitter_ids)
+      end
     end
 
     
