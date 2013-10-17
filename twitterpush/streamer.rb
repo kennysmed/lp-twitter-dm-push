@@ -65,6 +65,7 @@ module TwitterPush
       # We can add up to 100 users when we first create the stream.
       client.sitestream(twitter_ids.slice!(0,100)) do |hash|
         if hash[:message][:direct_message]
+          log("DM received: #{hash[:message][:direct_message][:sender_id]} to #{hash[:message][:direct_message][:recipient_id]}")
           # We get DMs the user has both sent and received.
           # We only want the ones they've received.
           if hash[:for_user] == hash[:message][:direct_message][:recipient_id]
