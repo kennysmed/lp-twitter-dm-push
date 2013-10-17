@@ -36,7 +36,7 @@ module TwitterPush
     # If we were going to be starting loads of streams, we'd have to ensure
     # we only started up to 25 per second. But we're not.
     def start(twitter_ids)
-      log("Starting Site Streams")
+      log("Starting Site Streams for Twitter IDs: #{twitter_ids}")
 
       while twitter_ids.length > 0 do
         start_new_stream( twitter_ids.slice!(0, max_users_per_stream) )
